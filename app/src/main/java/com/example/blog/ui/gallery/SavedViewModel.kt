@@ -1,13 +1,13 @@
-package com.example.blog.ui.tools
+package com.example.blog.ui.gallery
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class ToolsViewModel : ViewModel() {
+class SavedViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is tools Fragment"
+        value = "This is gallery Fragment"
     }
     val text: LiveData<String> = _text
 }

@@ -1,4 +1,4 @@
-package com.example.blog.ui.tools
+package com.example.blog.ui.gallery
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,20 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.blog.R
 
-class ToolsFragment : Fragment() {
+class SavedFragment : Fragment() {
 
-    private lateinit var toolsViewModel: ToolsViewModel
+    private lateinit var savedViewModel: SavedViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        toolsViewModel =
-            ViewModelProviders.of(this).get(ToolsViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_tools, container, false)
-        val textView: TextView = root.findViewById(R.id.text_tools)
-        toolsViewModel.text.observe(this, Observer {
+        savedViewModel =
+            ViewModelProviders.of(this).get(SavedViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_saved, container, false)
+        val textView: TextView = root.findViewById(R.id.text_gallery)
+        savedViewModel.text.observe(this, Observer {
             textView.text = it
         })
         return root
