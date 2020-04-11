@@ -8,4 +8,7 @@
     <color name="colorNavBar">#161d27</color>
     <color name="colorWhite">#ffffff</color>
     <color name="colorStatusBar">#1a242e</color>
+
+    <color name="colorPink">#e15861</color>
+    <color name="colorPurple">#b72377</color>
 </resources>

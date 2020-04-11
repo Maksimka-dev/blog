@@ -13,4 +13,14 @@
     <string name="menu_sing_in">Sign in</string>
     <string name="menu_sing_up">Sign up</string>
     <string name="menu_sing_out">Sing out</string>
+
+    <string name="sign_in_offer">Already registered? Sign in.</string>
+    <string name="sign_in">Sign in</string>
+
+    <string name="sign_up_offer">Create an account.</string>
+    <string name="sign_up">Sign up</string>
+
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="FullName">Full name</string>
 </resources>
