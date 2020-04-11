@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.blog.R
 import com.example.blog.databinding.SignInFragmentBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
 
 class SignInFragment : Fragment() {
     companion object {
@@ -22,10 +24,17 @@ class SignInFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: SignInFragmentBinding = DataBindingUtil.inflate(inflater, R.layout.sign_in_fragment, container, false)
-        binding.viewModel = ViewModelProviders.of(this).get(SignInViewModel::class.java)
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
 
-        return binding.root
+            val binding: SignInFragmentBinding =
+                DataBindingUtil.inflate(inflater, R.layout.sign_in_fragment, container, false)
+            binding.viewModel = ViewModelProviders.of(this).get(SignInViewModel::class.java)
+
+            return binding.root
+        } else {
+            return inflater.inflate(R.layout.fragment_signed_in, container, false)
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -33,5 +42,14 @@ class SignInFragment : Fragment() {
 
         val fab: FloatingActionButton = activity!!.findViewById(R.id.fab)
         fab.hide()
+
+        val signUpTW = activity!!.findViewById<TextView>(R.id.signUpTW)
+        signUpTW.setOnClickListener {
+            activity?.supportFragmentManager?.beginTransaction()
+                ?.replace(R.id.nav_host_fragment, SignUpFragment.newInstance())
+                ?.commit()
+            activity?.supportFragmentManager?.beginTransaction()
+                ?.remove(this)
+        }
     }
 }

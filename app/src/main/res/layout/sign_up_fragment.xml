@@ -112,6 +112,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
+            android:background="@android:color/transparent"
             android:fontFamily="@font/roboto_slab"
             android:text="@string/sign_in_offer"
             android:textColor="@color/colorWhite"
