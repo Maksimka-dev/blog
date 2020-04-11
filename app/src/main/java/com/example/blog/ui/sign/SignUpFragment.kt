@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.blog.R
 import com.example.blog.databinding.SignUpFragmentBinding
+import com.example.blog.ui.home.HomeFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 
@@ -53,7 +54,7 @@ class SignUpFragment : Fragment() {
         liveData.observe(viewLifecycleOwner, Observer {
             if (liveData.value == true){
                 activity!!.supportFragmentManager.beginTransaction()
-                    .replace(R.id.nav_host_fragment, SignInFragment.newInstance())
+                    .replace(R.id.nav_host_fragment, HomeFragment.newInstance())
                     .commit()
                 activity!!.supportFragmentManager.popBackStack()
             }

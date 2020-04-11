@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.blog.R
 import com.example.blog.databinding.SignInFragmentBinding
@@ -15,6 +16,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 
 class SignInFragment : Fragment() {
+    private lateinit var viewModel: SignInViewModel
+
     companion object {
         fun newInstance()
             = SignInFragment()
@@ -31,7 +34,9 @@ class SignInFragment : Fragment() {
             val binding: SignInFragmentBinding =
                 DataBindingUtil.inflate(inflater, R.layout.sign_in_fragment, container, false)
             binding.viewModel = ViewModelProviders.of(this).get(SignInViewModel::class.java)
-
+            viewModel = binding.viewModel as SignInViewModel
+            viewModel.activity = activity!!
+            viewModel.context = context!!
 
             return binding.root
         } else {
@@ -55,5 +60,17 @@ class SignInFragment : Fragment() {
                 activity!!.supportFragmentManager.popBackStack()
             }
         }
+
+        viewModel = ViewModelProviders.of(this).get(SignInViewModel::class.java)
+
+        val liveData = viewModel.liveData
+        liveData.observe(viewLifecycleOwner, Observer {
+            if (liveData.value == true){
+                activity!!.supportFragmentManager.beginTransaction()
+                    .remove(newInstance())
+                    .commit()
+                activity!!.supportFragmentManager.popBackStack()
+            }
+        })
     }
 }

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.blog.R
+import com.example.blog.ui.sign.SignInFragment
 
 class SavedFragment : Fragment() {
 
@@ -26,6 +27,7 @@ class SavedFragment : Fragment() {
         savedViewModel.text.observe(this, Observer {
             textView.text = it
         })
+        activity!!.supportFragmentManager.beginTransaction().remove(SignInFragment.newInstance()).commit()
         return root
     }
 }
