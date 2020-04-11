@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.blog.R
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.android.synthetic.main.fragment_settings.*
 
 class SettingsFragment : Fragment() {
 
@@ -22,10 +24,16 @@ class SettingsFragment : Fragment() {
         settingsViewModel =
             ViewModelProviders.of(this).get(SettingsViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_settings, container, false)
-        val textView: TextView = root.findViewById(R.id.text_tools)
-        settingsViewModel.text.observe(this, Observer {
-            textView.text = it
-        })
+
+
         return root
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        logOutBTN.setOnClickListener {
+            val auth = FirebaseAuth.getInstance()
+            auth.signOut()
+        }
     }
 }

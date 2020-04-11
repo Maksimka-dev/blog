@@ -1,6 +1,7 @@
 package com.example.blog.ui.sign
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +32,7 @@ class SignInFragment : Fragment() {
                 DataBindingUtil.inflate(inflater, R.layout.sign_in_fragment, container, false)
             binding.viewModel = ViewModelProviders.of(this).get(SignInViewModel::class.java)
 
+
             return binding.root
         } else {
             return inflater.inflate(R.layout.fragment_signed_in, container, false)
@@ -43,13 +45,15 @@ class SignInFragment : Fragment() {
         val fab: FloatingActionButton = activity!!.findViewById(R.id.fab)
         fab.hide()
 
-        val signUpTW = activity!!.findViewById<TextView>(R.id.signUpTW)
-        signUpTW.setOnClickListener {
-            activity?.supportFragmentManager?.beginTransaction()
-                ?.replace(R.id.nav_host_fragment, SignUpFragment.newInstance())
-                ?.commit()
-            activity?.supportFragmentManager?.beginTransaction()
-                ?.remove(this)
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            val signUpTW = activity!!.findViewById<TextView>(R.id.signUpTextView)
+            signUpTW.setOnClickListener {
+                activity!!.supportFragmentManager.beginTransaction()
+                    .replace(R.id.nav_host_fragment, SignUpFragment.newInstance())
+                    .commit()
+                activity!!.supportFragmentManager.popBackStack()
+            }
         }
     }
 }
