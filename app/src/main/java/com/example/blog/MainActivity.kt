@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.blog
 
 import android.os.Bundle
@@ -24,6 +26,9 @@ class MainActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        window.navigationBarColor = resources.getColor(R.color.colorNavBar)
+        window.statusBarColor = resources.getColor(R.color.colorStatusBar)
+
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -37,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_tools
+                R.id.nav_home, R.id.nav_saved, R.id.nav_settings, R.id.nav_sing_in
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)

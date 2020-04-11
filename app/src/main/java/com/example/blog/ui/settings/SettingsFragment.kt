@@ -1,4 +1,4 @@
-package com.example.blog.ui.tools
+package com.example.blog.ui.settings
 
 import android.os.Bundle
 import android.view.LayoutInflater

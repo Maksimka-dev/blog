@@ -5,5 +5,7 @@
     <color name="colorPrimaryTransparent">#3d5263</color>
     <color name="colorAccent">#5ea3dc</color>
     <color name="colorMenuPrimary">#233040</color>
+    <color name="colorNavBar">#161d27</color>
     <color name="colorWhite">#ffffff</color>
+    <color name="colorStatusBar">#1a242e</color>
 </resources>

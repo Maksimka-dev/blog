@@ -12,15 +12,27 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.example.blog.ui.gallery.SavedFragment"
+        android:id="@+id/nav_saved"
+        android:name="com.example.blog.ui.saved.SavedFragment"
         android:label="@string/menu_saved"
         tools:layout="@layout/fragment_saved" />
 
     <fragment
-        android:id="@+id/nav_tools"
-        android:name="com.example.blog.ui.tools.SettingsFragment"
+        android:id="@+id/nav_settings"
+        android:name="com.example.blog.ui.settings.SettingsFragment"
         android:label="@string/menu_settings"
         tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/nav_sing_in"
+        android:name="com.example.blog.ui.sign.SignInFragment"
+        android:label="@string/menu_sing_in"
+        tools:layout="@layout/sign_in_layout"/>
+
+    <fragment
+        android:id="@+id/nav_sign_up"
+        android:name="com.example.blog.ui.sign.SignUpFragment"
+        android:label="@string/menu_sing_in"
+        tools:layout="@layout/sing_up_layout"/>
 
 </navigation>

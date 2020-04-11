@@ -1,4 +1,4 @@
-package com.example.blog.ui.gallery
+package com.example.blog.ui.saved
 
 import android.os.Bundle
 import android.view.LayoutInflater
