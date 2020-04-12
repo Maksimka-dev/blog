@@ -1,7 +1,6 @@
-package com.example.blog.ui.sign
+package com.example.blog.ui.signIn
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.blog.R
 import com.example.blog.databinding.SignInFragmentBinding
+import com.example.blog.ui.home.HomeFragment
+import com.example.blog.ui.signUp.SignUpFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 
@@ -67,7 +68,7 @@ class SignInFragment : Fragment() {
         liveData.observe(viewLifecycleOwner, Observer {
             if (liveData.value == true){
                 activity!!.supportFragmentManager.beginTransaction()
-                    .remove(newInstance())
+                    .replace(R.id.nav_host_fragment, HomeFragment.newInstance())
                     .commit()
                 activity!!.supportFragmentManager.popBackStack()
             }

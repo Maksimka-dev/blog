@@ -8,7 +8,7 @@
         </import>
         <variable
             name="viewModel"
-            type="com.example.blog.ui.sign.SignUpViewModel" />
+            type="com.example.blog.ui.signUp.SignUpViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

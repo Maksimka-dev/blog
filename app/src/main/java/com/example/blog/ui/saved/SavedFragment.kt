@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.blog.R
-import com.example.blog.ui.sign.SignInFragment
+import com.example.blog.ui.signIn.SignInFragment
 
 class SavedFragment : Fragment() {
 

@@ -1,6 +1,5 @@
-package com.example.blog.ui.sign
+package com.example.blog.ui.signIn
 
-import android.R.attr.password
 import android.app.Activity
 import android.content.Context
 import android.util.Log
@@ -9,8 +8,6 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.blog.R
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -33,8 +30,12 @@ class SignInViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d("SIGN USER", "signInWithEmail:success")
-                    liveData.value = task.isSuccessful
 
+
+
+
+                    Toast.makeText(context, "You successfully logged in", Toast.LENGTH_SHORT).show()
+                    liveData.value = task.isSuccessful
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w("SIGN USER", "signInWithEmail:success", task.exception)
