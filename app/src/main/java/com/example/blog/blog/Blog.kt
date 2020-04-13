@@ -1,9 +1,7 @@
 package com.example.blog.blog
 
-import com.example.blog.R
-
 class Blog () {
-    var avatar = R.drawable.euro
+    var avatar: Int = 0
     var title: String = ""
     var lastMsg: String = ""
     var time: String = ""

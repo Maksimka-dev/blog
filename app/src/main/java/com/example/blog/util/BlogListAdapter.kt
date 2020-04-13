@@ -1,5 +1,6 @@
 package com.example.blog.util
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +28,7 @@ class BlogListAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val blogHolder: BlogViewHolder = holder as BlogViewHolder
 
-        //blogHolder.avatar.setImageResource(blogArray[position].avatar)
+        blogHolder.avatar.setImageResource(blogArray[position].avatar)
         blogHolder.title.text = blogArray[position].title
         blogHolder.lastMsg.text = blogArray[position].lastMsg
         blogHolder.unreadMsg.text = blogArray[position].unreadMsg
