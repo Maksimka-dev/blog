@@ -42,12 +42,7 @@ class SignUpViewModel : ViewModel() {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d("CREATE USER", "createUserWithEmail:success")
 
-                        val source = "abcdefghijklmnopqrstuvwxyz1234567890"
-                        val id = (1..25)
-                            .map { source.random() }
-                            .joinToString("")
-
-                        val user: User = User(name, email, id)
+                        val user: User = User(name, email)
 
                         FirebaseDatabase.getInstance()
                             .getReference("Users")
@@ -64,8 +59,6 @@ class SignUpViewModel : ViewModel() {
                         Log.w("CREATE USER", "createUserWithEmail:failure", task.exception)
                         liveData.value = task.isSuccessful
                     }
-
-                    // ...
                 }
         }
     }

@@ -29,11 +29,6 @@ class MainActivity : AppCompatActivity() {
         window.navigationBarColor = resources.getColor(R.color.colorNavBar)
         window.statusBarColor = resources.getColor(R.color.colorStatusBar)
 
-        val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         navView.itemTextColor = resources.getColorStateList(R.color.colorWhite)
