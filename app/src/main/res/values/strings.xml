@@ -23,4 +23,8 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="FullName">Full name</string>
+
+    <string name="blogName">Blog name</string>
+    <string name="description">Description</string>
+    <string name="descHint">Here you can add an additional description for your blog</string>
 </resources>
