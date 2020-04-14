@@ -1,22 +1,22 @@
 package com.example.blog.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.blog.R
 import com.example.blog.blog.Blog
-import com.example.blog.blog.BlogFragment
 import com.example.blog.databinding.FragmentHomeBinding
 import com.example.blog.ui.signIn.SignInFragment
 import com.example.blog.util.BlogListAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 
 class HomeFragment : Fragment() {
@@ -37,6 +37,9 @@ class HomeFragment : Fragment() {
         val binding: FragmentHomeBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
         binding.viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
         homeViewModel = binding.viewModel as HomeViewModel
+        homeViewModel.activity = activity!!
+        homeViewModel.context = context!!
+        homeViewModel.init()
 
         activity!!.supportFragmentManager.beginTransaction().remove(SignInFragment.newInstance()).commit()
 
@@ -60,23 +63,36 @@ class HomeFragment : Fragment() {
         blog2.unreadMsg = "3"
         blog2.time = "10:53"
 
-        val recyclerView = activity!!.findViewById<RecyclerView>(R.id.recyclerView)
-        val adapter = BlogListAdapter(layoutInflater, arrayOf(blog1, blog2))
+        val recyclerView: RecyclerView = activity!!.findViewById<RecyclerView>(R.id.recyclerView)
+        val adapter = BlogListAdapter(layoutInflater, homeViewModel.blogArrayList)
         recyclerView.adapter = adapter
+
+        val liveData: MutableLiveData<Boolean> = homeViewModel.blogLiveData
+        liveData.observe(viewLifecycleOwner, Observer {
+            if (liveData.value == true){
+                val refreshedAdapter = BlogListAdapter(layoutInflater, homeViewModel.blogArrayList)
+                recyclerView.adapter = refreshedAdapter
+
+                liveData.value = false
+            }
+        })
 
         mAuth = FirebaseAuth.getInstance()
         val user = mAuth.currentUser
 
-        if (user != null) {
-            val fab: FloatingActionButton = activity!!.findViewById(R.id.fab)
-            fab.show()
+        val fab: FloatingActionButton = activity!!.findViewById(R.id.fab)
+        fab.hide()
 
-            fab.setOnClickListener {
-                activity!!.supportFragmentManager.beginTransaction()
-                    .replace(R.id.nav_host_fragment, BlogFragment.newInstance())
-                    .addToBackStack("blog")
-                    .commit()
-            }
-        }
+        //if (user != null) {
+        //    val fab: FloatingActionButton = activity!!.findViewById(R.id.fab)
+        //    fab.hide()
+
+        //    fab.setOnClickListener {
+        //        activity!!.supportFragmentManager.beginTransaction()
+        //            .replace(R.id.nav_host_fragment, BlogFragment.newInstance())
+        //            .addToBackStack("blog")
+        //            .commit()
+        //    }
+        //}
     }
 }

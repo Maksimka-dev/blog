@@ -13,7 +13,7 @@ import com.example.blog.blog.Blog
 
 class BlogListAdapter(
     private val inflater: LayoutInflater,
-    private val blogArray: Array<Blog>)
+    private val blogArrayList: ArrayList<Blog>)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
 
@@ -22,17 +22,17 @@ class BlogListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return blogArray.size
+        return blogArrayList.size
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val blogHolder: BlogViewHolder = holder as BlogViewHolder
 
-        blogHolder.avatar.setImageResource(blogArray[position].avatar)
-        blogHolder.title.text = blogArray[position].title
-        blogHolder.lastMsg.text = blogArray[position].lastMsg
-        blogHolder.unreadMsg.text = blogArray[position].unreadMsg
-        blogHolder.time.text = blogArray[position].time
+        blogHolder.avatar.setImageResource(blogArrayList[position].avatar)
+        blogHolder.title.text = blogArrayList[position].title
+        blogHolder.lastMsg.text = blogArrayList[position].lastMsg
+        blogHolder.unreadMsg.text = blogArrayList[position].unreadMsg
+        blogHolder.time.text = blogArrayList[position].time
     }
 
     class BlogViewHolder (view: View) : RecyclerView.ViewHolder(view) {
