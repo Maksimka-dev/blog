@@ -27,7 +27,7 @@ class BlogListAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val blogHolder: BlogViewHolder = holder as BlogViewHolder
 
-        blogHolder.avatar.setImageResource(blogArrayList[position].avatar)
+        //blogHolder.avatar.setImageResource(blogArrayList[position].avatar)
         blogHolder.title.text = blogArrayList[position].title
         blogHolder.lastMsg.text = blogArrayList[position].lastMsg
         blogHolder.unreadMsg.text = blogArrayList[position].unreadMsg
@@ -35,7 +35,7 @@ class BlogListAdapter(
     }
 
     class BlogViewHolder (view: View) : RecyclerView.ViewHolder(view) {
-        val avatar: ImageView = view.findViewById(R.id.channelAvatar)
+        //val avatar: ImageView = view.findViewById(R.id.channelAvatar)
         val title: TextView = view.findViewById(R.id.title)
         val lastMsg: TextView = view.findViewById(R.id.channelLastMessage)
         val time: TextView = view.findViewById(R.id.time)

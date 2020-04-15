@@ -50,20 +50,6 @@ class HomeFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        //val blog1 = Blog()
-        //blog1.avatar = R.mipmap.euro
-        //blog1.title = "1xBet"
-        //blog1.lastMsg = "Mousesports vs Virtus.pro 1.56x1.01"
-        //blog1.unreadMsg = "5"
-        //blog1.time = "11:47"
-
-        //val blog2 = Blog()
-        //blog2.avatar = R.mipmap.virus
-        //blog2.title = "Coronavirus"
-        //blog2.lastMsg = "Take care of yourself!"
-        //blog2.unreadMsg = "3"
-        //blog2.time = "10:53"
-
         val recyclerView: RecyclerView = activity!!.findViewById<RecyclerView>(R.id.recyclerView)
         val adapter = BlogListAdapter(layoutInflater, homeViewModel.blogArrayList)
         recyclerView.adapter = adapter
@@ -73,6 +59,8 @@ class HomeFragment : Fragment() {
             if (liveData.value == true) {
                 val refreshedAdapter = BlogListAdapter(layoutInflater, homeViewModel.blogArrayList)
                 recyclerView.adapter = refreshedAdapter
+
+                homeViewModel.init()
 
                 liveData.value = false
             }

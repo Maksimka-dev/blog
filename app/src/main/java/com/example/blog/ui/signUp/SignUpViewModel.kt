@@ -28,9 +28,6 @@ class SignUpViewModel : ViewModel() {
         val name = activity!!.findViewById<EditText>(R.id.nameET).text.toString()
         val password = activity!!.findViewById<EditText>(R.id.passwordET).text.toString()
 
-        Log.d("Hello", email)
-        Log.d("Success", password)
-
         if (Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length >= 6 && name.length >= 4) {
             //TODO add progress bar
             mAuth.createUserWithEmailAndPassword(email, password)
@@ -42,7 +39,9 @@ class SignUpViewModel : ViewModel() {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d("CREATE USER", "createUserWithEmail:success")
 
-                        val user: User = User(name, email)
+                        val user: User = User()
+                        user.email = email
+                        user.name = name
 
                         FirebaseDatabase.getInstance()
                             .getReference("Users")
