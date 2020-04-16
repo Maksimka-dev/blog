@@ -1,7 +1,6 @@
 package com.example.blog.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,13 +16,11 @@ import com.example.blog.databinding.FragmentHomeBinding
 import com.example.blog.ui.signIn.SignInFragment
 import com.example.blog.util.BlogListAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+
 
 class HomeFragment : Fragment() {
 
     private lateinit var homeViewModel: HomeViewModel
-    private lateinit var mAuth: FirebaseAuth
 
     companion object{
         fun newInstance()
@@ -50,7 +47,7 @@ class HomeFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val recyclerView: RecyclerView = activity!!.findViewById<RecyclerView>(R.id.recyclerView)
+        val recyclerView: RecyclerView = activity!!.findViewById(R.id.recyclerView)
         val adapter = BlogListAdapter(layoutInflater, homeViewModel.blogArrayList)
         recyclerView.adapter = adapter
 
@@ -90,5 +87,10 @@ class HomeFragment : Fragment() {
                 }
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        homeViewModel.init()
     }
 }

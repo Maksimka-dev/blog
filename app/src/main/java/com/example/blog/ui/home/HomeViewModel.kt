@@ -104,6 +104,6 @@ class HomeViewModel : ViewModel() {
     }
 
     fun onRefreshButtonClick(){
-        init()
+        blogLiveData.value = true
     }
 }

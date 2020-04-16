@@ -13,7 +13,6 @@ import com.example.blog.R
 import com.example.blog.databinding.BlogFragmentBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 
 class BlogFragment : Fragment() {
 

@@ -5,7 +5,6 @@ import android.content.Context
 import android.util.Log
 import android.util.Patterns
 import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -39,7 +38,7 @@ class SignUpViewModel : ViewModel() {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d("CREATE USER", "createUserWithEmail:success")
 
-                        val user: User = User()
+                        val user = User()
                         user.email = email
                         user.name = name
 
