@@ -32,7 +32,7 @@ class HomeViewModel : ViewModel() {
     fun init(){
         mAuth = FirebaseAuth.getInstance()
         val firebaseUser = mAuth.currentUser
-        Toast.makeText(context, firebaseUser.toString(), Toast.LENGTH_LONG).show()
+        Toast.makeText(context, firebaseUser.toString(), Toast.LENGTH_SHORT).show()
 
         //Получаем пользователя из бд чтобы проверить есть ли канал в его подписках
         var user: User? = User()
@@ -90,11 +90,11 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun displayLoginRequired(){
-        Toast.makeText(context, "You need to login first", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "You need to login first", Toast.LENGTH_SHORT).show()
     }
 
     private fun displayNoConnection(){
-        Toast.makeText(context, "No internet connection available", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show()
     }
 
     private fun isNetworkConnected(): Boolean {

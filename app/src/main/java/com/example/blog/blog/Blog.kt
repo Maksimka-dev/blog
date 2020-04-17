@@ -9,6 +9,13 @@ class Blog () {
     var unreadMsg: String = ""
     var description: String = ""
     var blogId: String = ""
+    var messages: ArrayList<String> = arrayListOf()
+
+
+
+    override fun toString(): String {
+        return this.title
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -23,6 +30,8 @@ class Blog () {
         if (time != other.time) return false
         if (unreadMsg != other.unreadMsg) return false
         if (description != other.description) return false
+        if (blogId != other.blogId) return false
+        if (messages != other.messages) return false
 
         return true
     }
@@ -35,10 +44,8 @@ class Blog () {
         result = 31 * result + time.hashCode()
         result = 31 * result + unreadMsg.hashCode()
         result = 31 * result + description.hashCode()
+        result = 31 * result + blogId.hashCode()
+        result = 31 * result + messages.hashCode()
         return result
-    }
-
-    override fun toString(): String {
-        return this.title
     }
 }

@@ -27,4 +27,6 @@
     <string name="blogName">Blog name</string>
     <string name="description">Description</string>
     <string name="descHint">Here you can add an additional description for your blog</string>
+
+    <string name="type">Type</string>
 </resources>

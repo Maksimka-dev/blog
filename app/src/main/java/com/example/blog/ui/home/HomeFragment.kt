@@ -15,6 +15,7 @@ import com.example.blog.R
 import com.example.blog.blog.Blog
 import com.example.blog.blog.BlogFragment
 import com.example.blog.databinding.FragmentHomeBinding
+import com.example.blog.ui.chat.ChatFragment
 import com.example.blog.ui.signIn.SignInFragment
 import com.example.blog.util.BlogListAdapter
 import com.example.blog.util.OnItemClickListener
@@ -98,6 +99,17 @@ class HomeFragment : Fragment(), OnItemClickListener {
     }
 
     override fun onItemClicked(blog: Blog) {
+        val bundle = Bundle()
+        bundle.putString("title", blog.title)
+        bundle.putString("blogId", blog.blogId)
+        bundle.putStringArrayList("messages", blog.messages)
 
+        val fragment = ChatFragment.newInstance()
+        fragment.arguments = bundle
+
+        activity!!.supportFragmentManager.beginTransaction()
+            .replace(R.id.nav_host_fragment, fragment)
+            .addToBackStack("blog")
+            .commit()
     }
 }
