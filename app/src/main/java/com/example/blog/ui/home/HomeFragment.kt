@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -11,14 +12,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.example.blog.R
+import com.example.blog.blog.Blog
 import com.example.blog.blog.BlogFragment
 import com.example.blog.databinding.FragmentHomeBinding
 import com.example.blog.ui.signIn.SignInFragment
 import com.example.blog.util.BlogListAdapter
+import com.example.blog.util.OnItemClickListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), OnItemClickListener {
 
     private lateinit var homeViewModel: HomeViewModel
 
@@ -48,16 +51,16 @@ class HomeFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         val recyclerView: RecyclerView = activity!!.findViewById(R.id.recyclerView)
-        val adapter = BlogListAdapter(layoutInflater, homeViewModel.blogArrayList)
-        recyclerView.adapter = adapter
+
+        homeViewModel.onRefreshButtonClick()
 
         val liveData: MutableLiveData<Boolean> = homeViewModel.blogLiveData
         liveData.observe(viewLifecycleOwner, Observer {
             if (liveData.value == true) {
-                val refreshedAdapter = BlogListAdapter(layoutInflater, homeViewModel.blogArrayList)
-                recyclerView.adapter = refreshedAdapter
-
                 homeViewModel.init()
+
+                val refreshedAdapter = BlogListAdapter(this, homeViewModel.blogArrayList)
+                recyclerView.adapter = refreshedAdapter
 
                 liveData.value = false
             }
@@ -92,5 +95,9 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         homeViewModel.init()
+    }
+
+    override fun onItemClicked(blog: Blog) {
+
     }
 }
