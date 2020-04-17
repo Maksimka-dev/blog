@@ -63,8 +63,8 @@ class HomeViewModel : ViewModel() {
 
                         blogArrayList.clear()
 
-                        for (artistSnapshot in dataSnapshot.children) {
-                            val blog = artistSnapshot.getValue(Blog::class.java)
+                        for (blogSnapshot in dataSnapshot.children) {
+                            val blog = blogSnapshot.getValue(Blog::class.java)
 
                             if (blog != null) {
                                 Log.d("BLOG", blog.title)
