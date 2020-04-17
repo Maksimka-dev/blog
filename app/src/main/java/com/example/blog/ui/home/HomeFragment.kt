@@ -43,8 +43,6 @@ class HomeFragment : Fragment(), OnItemClickListener {
         homeViewModel.context = context!!
         homeViewModel.init()
 
-        activity!!.supportFragmentManager.beginTransaction().remove(SignInFragment.newInstance()).commit()
-
         return binding.root
     }
 
@@ -66,10 +64,6 @@ class HomeFragment : Fragment(), OnItemClickListener {
                 liveData.value = false
             }
         })
-
-
-        val toolbar: androidx.appcompat.widget.Toolbar = activity!!.findViewById(R.id.toolbar)
-        toolbar.title = "Blogs"
 
         val fab: FloatingActionButton = activity!!.findViewById(R.id.fab)
         fab.hide()
@@ -93,15 +87,11 @@ class HomeFragment : Fragment(), OnItemClickListener {
         })
     }
 
-    override fun onResume() {
-        super.onResume()
-        homeViewModel.init()
-    }
-
     override fun onItemClicked(blog: Blog) {
         val bundle = Bundle()
         bundle.putString("title", blog.title)
         bundle.putString("blogId", blog.blogId)
+        bundle.putString("ownerId", blog.ownerId)
         bundle.putStringArrayList("messages", blog.messages)
 
         val fragment = ChatFragment.newInstance()
