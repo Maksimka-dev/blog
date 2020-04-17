@@ -63,6 +63,8 @@ class ChatFragment : Fragment(){
             }
         })
 
+        recyclerView.scrollToPosition(viewModel.lastPos)
+
         val toolbar: androidx.appcompat.widget.Toolbar = activity!!.findViewById(R.id.toolbar)
         toolbar.title = ""
 

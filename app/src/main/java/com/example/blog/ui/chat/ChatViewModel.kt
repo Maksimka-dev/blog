@@ -28,6 +28,8 @@ class ChatViewModel : ViewModel() {
 
     private val database = FirebaseDatabase.getInstance()
 
+    var lastPos = 0
+
     var blog: Blog = Blog()
     var title: String = ""
 
@@ -48,6 +50,7 @@ class ChatViewModel : ViewModel() {
         else inputBtnVisible.set(false)
 
         messagesArrayList = blog.messages
+        lastPos = messagesArrayList.lastIndex
 
         val toolbar: androidx.appcompat.widget.Toolbar = activity!!.findViewById(R.id.toolbar)
         toolbar.title = blog.title
@@ -63,6 +66,7 @@ class ChatViewModel : ViewModel() {
                         val message = chatSnapshot.getValue(String()::class.java)
 
                         messagesArrayList.add(message!!)
+                        lastPos = messagesArrayList.lastIndex
                     }
                 }
 
