@@ -52,6 +52,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/sendBtn"
             app:layout_constraintStart_toEndOf="@+id/clipBtn"
+            app:layout_constraintTop_toBottomOf="@+id/messagesRecyclerView"
             tools:ignore="Autofill" />
 
         <Button
@@ -66,14 +67,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/message" />
 
-        <ImageView
-            android:id="@+id/imageGoogle"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_marginBottom="32dp"
-            app:layout_constraintBottom_toBottomOf="@+id/messagesRecyclerView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/googleg_standard_color_18" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

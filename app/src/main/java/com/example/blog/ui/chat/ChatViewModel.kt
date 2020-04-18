@@ -5,22 +5,23 @@ package com.example.blog.ui.chat
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.blog.R
 import com.example.blog.blog.Blog
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import java.io.ByteArrayOutputStream
 
 
 class ChatViewModel : ViewModel() {
@@ -28,7 +29,8 @@ class ChatViewModel : ViewModel() {
     var context: Context? = null
     var bundle: Bundle? = null
 
-    private val database = FirebaseDatabase.getInstance()
+    private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+    private val storage: FirebaseStorage = FirebaseStorage.getInstance()
 
     var lastPos = 0
 
@@ -36,10 +38,13 @@ class ChatViewModel : ViewModel() {
     var title: String = ""
 
     var messagesArrayList: ArrayList<String> = arrayListOf()
+    var picsArrayList: ArrayList<Bitmap?> = arrayListOf(null)
 
-    private var user = FirebaseAuth.getInstance().currentUser
+    private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
 
     val chatLiveData: MutableLiveData<Boolean> = MutableLiveData()
+
+    val messageSentLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
     var bitmapImage: Bitmap? = null
 
@@ -55,19 +60,27 @@ class ChatViewModel : ViewModel() {
         val toolbar: androidx.appcompat.widget.Toolbar = activity!!.findViewById(R.id.toolbar)
         toolbar.title = blog.title
 
-        val ref = database.getReference("Blogs")
+        initMessages()
+
+        initPics()
+
+        Log.d("SIZES", "${picsArrayList.size} - ${messagesArrayList.size}")
+    }
+
+    private fun initMessages() {
+        val ref: DatabaseReference = database.getReference("Blogs")
         ref.child("${blog.title}/messages")
-            .addValueEventListener(object: ValueEventListener{
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
 
                     messagesArrayList.clear()
 
-                    for (chatSnapshot in dataSnapshot.children) {
-                        val message = chatSnapshot.getValue(String()::class.java)
-
+                    //добавляем сообщение в массив
+                    for (chatSnapshot: DataSnapshot in dataSnapshot.children) {
+                        val message: String? = chatSnapshot.getValue(String()::class.java)
                         messagesArrayList.add(message!!)
-                        lastPos = messagesArrayList.lastIndex
                     }
+                    lastPos = messagesArrayList.lastIndex
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -75,17 +88,53 @@ class ChatViewModel : ViewModel() {
                     Log.w("VALUE", "Failed to read value.", error.toException())
                 }
             })
+    }
 
-        chatLiveData.value = true
+    private fun initPics(){
+        setRefreshTimer()
+        //добавляем картинку в массив
+        val maxDownloadSizeBytes: Long = 5120 * 5120
+
+        picsArrayList = arrayListOf()
+        for (i in 0..messagesArrayList.size){
+            picsArrayList.add(null)
+        }
+
+        for (i in 0..messagesArrayList.size) {
+            val imageRef = storage.reference
+                .child("Blogs")
+                .child(blog.title)
+                .child("$i.png")
+
+            imageRef.getBytes(maxDownloadSizeBytes)
+                .addOnSuccessListener {
+                    picsArrayList[i] = BitmapFactory.decodeByteArray(it, 0, it.size)
+                }
+        }
+    }
+
+    private fun setRefreshTimer(){
+        Toast.makeText(context, "Refreshing...", Toast.LENGTH_SHORT).show()
+        object : CountDownTimer(2000, 2000) {
+            override fun onTick(millisUntilFinished: Long) {
+
+            }
+
+            override fun onFinish() {
+                //обновить recycler view
+                chatLiveData.value = true
+            }
+        }.start()
     }
 
     fun onSendBtnClick(){
+        setRefreshTimer()
         if (isNetworkConnected()) {
 
             if (user!!.uid == blog.ownerId) {
 
                 val textField = activity!!.findViewById<EditText>(R.id.message)
-
+                //Отправляем текст
                 if (textField.text.length > 1) {
                     messagesArrayList.add(textField.text.toString())
 
@@ -94,6 +143,40 @@ class ChatViewModel : ViewModel() {
                         .setValue(messagesArrayList)
                         .addOnCompleteListener(activity!!) { task ->
                             if (task.isSuccessful) {
+                                initMessages()
+
+                                if (bitmapImage == null){
+                                    bitmapImage = BitmapFactory.decodeResource(context!!.resources, R.mipmap.euro)
+                                }
+
+                                val baos = ByteArrayOutputStream()
+                                bitmapImage!!.compress(Bitmap.CompressFormat.PNG, 100, baos)
+                                val data = baos.toByteArray()
+
+                                FirebaseStorage
+                                    .getInstance()
+                                    .getReference("Blogs")
+                                    .child("${blog.title}/${messagesArrayList.size - 1}.png")
+                                    .putBytes(data)
+                                    .addOnFailureListener {
+                                        bitmapImage = null
+                                        Toast.makeText(
+                                            context,
+                                            "Fail uploading image",
+                                            Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                        .addOnSuccessListener {
+                                            initPics()
+                                            bitmapImage = null
+                                            Toast.makeText(
+                                                context,
+                                                "Upload successful",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+
+                                //обновляем recycler view
                                 chatLiveData.value = true
                             }
                         }
@@ -105,11 +188,6 @@ class ChatViewModel : ViewModel() {
         } else displayNoConnection()
     }
 
-
-    fun onClipBtnClick(){
-        val imageField: ImageView = activity!!.findViewById(R.id.messagePic)
-
-    }
 
     private fun displayNoConnection(){
         Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show()

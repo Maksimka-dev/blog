@@ -1,5 +1,7 @@
 package com.example.blog.util
 
+import android.graphics.Bitmap
+import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.blog.R
 
 class ChatListAdapter(
-    private val messages: ArrayList<String>
+    private val messages: ArrayList<String>,
+    private val pics: ArrayList<Bitmap?>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -26,17 +29,20 @@ class ChatListAdapter(
         val chatHolder: ChatViewHolder = holder as ChatViewHolder
 
         val message: String = messages[position]
+        val pic: Bitmap? = pics[position]
 
-        chatHolder.bind(message)
+        chatHolder.bind(message, pic)
     }
 
     class ChatViewHolder (view: View) : RecyclerView.ViewHolder(view){
-        val textView: TextView = view.findViewById(R.id.messageText)
-        val imageView: ImageView = view.findViewById(R.id.messagePic)
+        private val textView: TextView = view.findViewById(R.id.messageText)
+        private val imageView: ImageView = view.findViewById(R.id.messagePic)
 
-        fun bind(message: String){
+        fun bind(message: String, pic: Bitmap?){
             textView.text = message
-            //imageView = image
+            if (pic != null) {
+                imageView.setImageBitmap(pic)
+            }
         }
     }
 }

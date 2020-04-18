@@ -32,7 +32,6 @@ class HomeViewModel : ViewModel() {
     fun init(){
         mAuth = FirebaseAuth.getInstance()
         val firebaseUser = mAuth.currentUser
-        Toast.makeText(context, firebaseUser.toString(), Toast.LENGTH_SHORT).show()
 
         //Получаем пользователя из бд чтобы проверить есть ли канал в его подписках
         var user: User? = User()

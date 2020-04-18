@@ -9,9 +9,11 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
@@ -62,7 +64,7 @@ class ChatFragment : Fragment(){
         liveData.observe(viewLifecycleOwner, Observer {
             if (liveData.value == true) {
 
-                val refreshedAdapter = ChatListAdapter(viewModel.messagesArrayList)
+                val refreshedAdapter = ChatListAdapter(viewModel.messagesArrayList, viewModel.picsArrayList)
                 recyclerView.adapter = refreshedAdapter
 
                 liveData.value = false
@@ -70,8 +72,8 @@ class ChatFragment : Fragment(){
         })
 
         //достаем картинку из галереи
-        val uploadImageView: ImageView = activity!!.findViewById(R.id.imageGoogle)
-        uploadImageView.setOnClickListener {
+        val clipBtn: Button = activity!!.findViewById(R.id.clipBtn)
+        clipBtn.setOnClickListener {
             if(ActivityCompat.checkSelfPermission(activity!!,
                     Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             {
@@ -108,9 +110,6 @@ class ChatFragment : Fragment(){
             if (requestCode == 1000) {
                 val returnUri: Uri? = data.data
                 val bitmapImage = MediaStore.Images.Media.getBitmap(activity!!.contentResolver, returnUri)
-
-                val uploadImageView: ImageView = activity!!.findViewById(R.id.imageGoogle)
-                uploadImageView.setImageBitmap(bitmapImage)
 
                 viewModel.bitmapImage = bitmapImage
             }
