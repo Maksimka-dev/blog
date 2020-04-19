@@ -44,8 +44,6 @@ class ChatViewModel : ViewModel() {
 
     val chatLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
-    val messageSentLiveData: MutableLiveData<Boolean> = MutableLiveData()
-
     var bitmapImage: Bitmap? = null
 
     fun createView(){
@@ -146,7 +144,7 @@ class ChatViewModel : ViewModel() {
                                 initMessages()
 
                                 if (bitmapImage == null){
-                                    bitmapImage = BitmapFactory.decodeResource(context!!.resources, R.mipmap.euro)
+                                    bitmapImage = BitmapFactory.decodeResource(context!!.resources, R.mipmap.tiny)
                                 }
 
                                 val baos = ByteArrayOutputStream()

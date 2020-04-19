@@ -48,7 +48,6 @@ class ChatFragment : Fragment(){
 
         viewModel.activity = activity!!
         viewModel.context = context!!
-        viewModel.bundle = this.arguments
 
         return binding.root
     }
@@ -56,6 +55,7 @@ class ChatFragment : Fragment(){
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        viewModel.bundle = this.arguments
         viewModel.createView()
 
         val recyclerView: RecyclerView = activity!!.findViewById(R.id.messagesRecyclerView)

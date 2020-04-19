@@ -2,7 +2,6 @@ package com.example.blog.blog
 
 class Blog () {
     var ownerId: String = ""
-    var avatar: Int = 0
     var title: String = ""
     var lastMsg: String = ""
     var time: String = ""
@@ -10,8 +9,6 @@ class Blog () {
     var description: String = ""
     var blogId: String = ""
     var messages: ArrayList<String> = arrayListOf()
-
-
 
     override fun toString(): String {
         return this.title
@@ -24,7 +21,6 @@ class Blog () {
         other as Blog
 
         if (ownerId != other.ownerId) return false
-        if (avatar != other.avatar) return false
         if (title != other.title) return false
         if (lastMsg != other.lastMsg) return false
         if (time != other.time) return false
@@ -38,7 +34,6 @@ class Blog () {
 
     override fun hashCode(): Int {
         var result = ownerId.hashCode()
-        result = 31 * result + avatar
         result = 31 * result + title.hashCode()
         result = 31 * result + lastMsg.hashCode()
         result = 31 * result + time.hashCode()

@@ -4,6 +4,7 @@ package com.example.blog.blog
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.util.Log
@@ -16,6 +17,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
+import java.io.ByteArrayOutputStream
 
 class BlogViewModel : ViewModel() {
     var activity: Activity? = null
@@ -30,61 +33,89 @@ class BlogViewModel : ViewModel() {
 
     val changeFragmentLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
+    var bitmapImage: Bitmap? = null
+
     fun createBlog(){
         if (isNetworkConnected()) {
-            blog.title = title
-            blog.description = description
-            blog.avatar = avatar
-            blog.ownerId = userId!!
-            blog.time = "10:55"
+            if (bitmapImage != null) {
+                if (title.length > 1) {
+                    blog.title = title
+                    blog.description = description
+                    blog.ownerId = userId!!
+                    blog.time = "10:55"
 
-            val source = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-            blog.blogId = (1..25)
-                .map { source.random() }
-                .joinToString("")
+                    val source = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+                    blog.blogId = (1..25)
+                        .map { source.random() }
+                        .joinToString("")
 
-            FirebaseDatabase.getInstance()
-                .getReference("Blogs")
-                .child(blog.title)
-                .setValue(blog)
-                .addOnCompleteListener(activity!!) { task ->
-                    if (task.isSuccessful) {
-                        changeFragmentLiveData.value = true
-                    }
-                }
+                    //Создаем блог в базе данных
+                    FirebaseDatabase.getInstance()
+                        .getReference("Blogs")
+                        .child(blog.title)
+                        .setValue(blog)
+                        .addOnCompleteListener(activity!!) { task ->
+                            if (task.isSuccessful) {
 
-            //Добавляем канал в подписки
-            var user: User?
+                                //Добавляем иконку блога в хранилище
+                                val baos = ByteArrayOutputStream()
+                                bitmapImage!!.compress(Bitmap.CompressFormat.PNG, 100, baos)
+                                val data = baos.toByteArray()
 
-            val userRef = FirebaseDatabase.getInstance()
-                .getReference("Users/${FirebaseAuth.getInstance().currentUser!!.uid}")
+                                FirebaseStorage.getInstance()
+                                    .reference
+                                    .child("Blogs")
+                                    .child(blog.title)
+                                    .child("avatar.png")
+                                    .putBytes(data)
+                                    .addOnCompleteListener {
+                                        changeFragmentLiveData.value = true
+                                    }
+                            }
+                        }
 
-            userRef.addValueEventListener(object : ValueEventListener {
 
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    user = dataSnapshot.getValue(User::class.java)
+                    //Добавляем канал в подписки
+                    var user: User?
 
-                    if (!user?.subbs?.contains(blog.blogId)!!) {
-                        user?.subbs?.add(blog.blogId)
-                        Log.d("SUBBS", user!!.subbs[0])
+                    val userRef = FirebaseDatabase.getInstance()
+                        .getReference("Users/${FirebaseAuth.getInstance().currentUser!!.uid}")
 
-                        //Запись в подписки
-                        FirebaseDatabase.getInstance()
-                            .getReference("Users/${FirebaseAuth.getInstance().currentUser!!.uid}/subbs")
-                            .setValue(user!!.subbs)
-                    }
-                }
+                    userRef.addValueEventListener(object : ValueEventListener {
 
-                override fun onCancelled(error: DatabaseError) {
-                    Log.w("VALUE", "Failed to read value.", error.toException())
-                }
-            })
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            user = dataSnapshot.getValue(User::class.java)
 
+                            if (!user?.subbs?.contains(blog.blogId)!!) {
+                                user?.subbs?.add(blog.blogId)
+                                Log.d("SUBBS", user!!.subbs[0])
+
+                                //Запись в подписки
+                                FirebaseDatabase.getInstance()
+                                    .getReference("Users/${FirebaseAuth.getInstance().currentUser!!.uid}/subbs")
+                                    .setValue(user!!.subbs)
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Log.w("VALUE", "Failed to read value.", error.toException())
+                        }
+                    })
+                } else displayNameTooShort()
+            } else displayNoAvatar()
         } else displayNoConnection()
     }
 
+    private fun displayNameTooShort(){
+        Toast.makeText(context, "Title is too short", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun displayNoAvatar(){
+        Toast.makeText(context, "Select blog's icon first", Toast.LENGTH_SHORT).show()
+    }
+
     private fun displayNoConnection(){
-        Toast.makeText(context, "No internet connection available", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show()
     }
 
     private fun isNetworkConnected(): Boolean {
