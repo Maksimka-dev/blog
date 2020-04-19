@@ -43,7 +43,6 @@ class BlogListAdapter(
         private val title: TextView = view.findViewById(R.id.title)
         private val lastMsgTV: TextView = view.findViewById(R.id.channelLastMessage)
         private val timeTV: TextView = view.findViewById(R.id.time)
-        private val unreadMsg: TextView = view.findViewById(R.id.unreadMes)
 
         fun bind(blog: Blog, avatar: Bitmap?, clickListener: OnItemClickListener){
             var time = ""
@@ -58,7 +57,6 @@ class BlogListAdapter(
                 lastMsgTV.text = (blog.messages.last().substring(range = (0..30)) + "...")
             } else lastMsgTV.text = blog.messages.last()
             timeTV.text = time
-            unreadMsg.text = blog.unreadMsg
 
             if (avatar != null){
                 avatarIV.setImageBitmap(avatar)
