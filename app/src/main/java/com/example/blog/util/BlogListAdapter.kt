@@ -42,13 +42,22 @@ class BlogListAdapter(
         private val avatarIV: de.hdodenhof.circleimageview.CircleImageView = view.findViewById(R.id.channelAvatar)
         private val title: TextView = view.findViewById(R.id.title)
         private val lastMsgTV: TextView = view.findViewById(R.id.channelLastMessage)
-        private val time: TextView = view.findViewById(R.id.time)
+        private val timeTV: TextView = view.findViewById(R.id.time)
         private val unreadMsg: TextView = view.findViewById(R.id.unreadMes)
 
         fun bind(blog: Blog, avatar: Bitmap?, clickListener: OnItemClickListener){
+            var time = ""
+            for (i in blog.time.last().toString().indices){
+                if (i == 0 || i == blog.time.last().toString().length - 1) continue
+                else time += blog.time.last().toString()[i]
+            }
+
+
             title.text = blog.title
-            lastMsgTV.text = blog.messages.last()
-            time.text = blog.time
+            if(blog.messages.last().length > 30) {
+                lastMsgTV.text = (blog.messages.last().substring(range = (0..30)) + "...")
+            } else lastMsgTV.text = blog.messages.last()
+            timeTV.text = time
             unreadMsg.text = blog.unreadMsg
 
             if (avatar != null){

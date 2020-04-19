@@ -88,6 +88,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
         bundle.putString("title", blog.title)
         bundle.putString("blogId", blog.blogId)
         bundle.putString("ownerId", blog.ownerId)
+        bundle.putStringArrayList("time", blog.time)
         bundle.putStringArrayList("messages", blog.messages)
 
         val fragment = ChatFragment.newInstance()

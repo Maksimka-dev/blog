@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.blog.blog
 
 import android.Manifest
@@ -69,6 +71,7 @@ class BlogFragment : Fragment() {
                 bundle.putString("title", blogViewModel.blog.title)
                 bundle.putString("blogId", blogViewModel.blog.blogId)
                 bundle.putString("ownerId", blogViewModel.blog.ownerId)
+                bundle.putStringArrayList("time", blogViewModel.blog.time)
                 bundle.putStringArrayList("messages", blogViewModel.blog.messages)
 
                 val fragment = ChatFragment.newInstance()

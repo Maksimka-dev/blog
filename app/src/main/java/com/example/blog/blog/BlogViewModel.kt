@@ -42,7 +42,6 @@ class BlogViewModel : ViewModel() {
                     blog.title = title
                     blog.description = description
                     blog.ownerId = userId!!
-                    blog.time = "10:55"
 
                     val source = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
                     blog.blogId = (1..25)

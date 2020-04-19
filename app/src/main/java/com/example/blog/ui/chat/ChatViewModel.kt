@@ -22,6 +22,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class ChatViewModel : ViewModel() {
@@ -38,6 +41,7 @@ class ChatViewModel : ViewModel() {
     var title: String = ""
 
     var messagesArrayList: ArrayList<String> = arrayListOf()
+    var timeArrayList: ArrayList<String> = arrayListOf()
     var picsArrayList: ArrayList<Bitmap?> = arrayListOf(null)
 
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
@@ -50,9 +54,11 @@ class ChatViewModel : ViewModel() {
         blog.title = bundle!!.getString("title", "")
         blog.blogId = bundle!!.getString("blogId", "")
         blog.messages = bundle!!.getStringArrayList("messages")!!
+        blog.time = bundle!!.getStringArrayList("time")!!
         blog.ownerId = bundle!!.getString("ownerId", "")
 
         messagesArrayList = blog.messages
+        timeArrayList = blog.time
         lastPos = messagesArrayList.lastIndex
 
         val toolbar: androidx.appcompat.widget.Toolbar = activity!!.findViewById(R.id.toolbar)
@@ -79,6 +85,25 @@ class ChatViewModel : ViewModel() {
                         messagesArrayList.add(message!!)
                     }
                     lastPos = messagesArrayList.lastIndex
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Failed to read value
+                    Log.w("VALUE", "Failed to read value.", error.toException())
+                }
+            })
+
+        ref.child("${blog.title}/time")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                    timeArrayList.clear()
+
+                    //добавляем время в массив
+                    for (chatSnapshot: DataSnapshot in dataSnapshot.children) {
+                        val time: String? = chatSnapshot.getValue(String()::class.java)
+                        timeArrayList.add(time!!)
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -136,12 +161,20 @@ class ChatViewModel : ViewModel() {
                 if (textField.text.length > 1) {
                     messagesArrayList.add(textField.text.toString())
 
-                    val ref = database.getReference("Blogs")
-                    ref.child("${blog.title}/messages")
+                    val date = Date()
+                    val dateFormat = SimpleDateFormat("MM.dd hh:mm", Locale.getDefault())
+                    timeArrayList.add(dateFormat.format(date))
+
+                    val messageRef = database.getReference("Blogs")
+                    messageRef.child("${blog.title}/messages")
                         .setValue(messagesArrayList)
-                        .addOnCompleteListener(activity!!) { task ->
+                        .addOnCompleteListener(activity!!) { task->
+
                             if (task.isSuccessful) {
-                                initMessages()
+                                messageRef.child("${blog.title}/time")
+                                    .setValue(timeArrayList).addOnSuccessListener {
+                                        initMessages()
+                                    }
 
                                 if (bitmapImage == null){
                                     bitmapImage = BitmapFactory.decodeResource(context!!.resources, R.mipmap.tiny)

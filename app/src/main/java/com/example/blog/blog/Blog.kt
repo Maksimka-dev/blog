@@ -6,7 +6,7 @@ class Blog () {
     var ownerId: String = ""
     var title: String = ""
     var lastMsg: String = ""
-    var time: String = ""
+    var time: ArrayList<String> = arrayListOf()
     var unreadMsg: String = ""
     var description: String = ""
     var blogId: String = ""
