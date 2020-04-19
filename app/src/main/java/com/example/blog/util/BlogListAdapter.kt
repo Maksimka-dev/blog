@@ -41,13 +41,13 @@ class BlogListAdapter(
     class BlogViewHolder (view: View) : RecyclerView.ViewHolder(view) {
         private val avatarIV: de.hdodenhof.circleimageview.CircleImageView = view.findViewById(R.id.channelAvatar)
         private val title: TextView = view.findViewById(R.id.title)
-        private val lastMsg: TextView = view.findViewById(R.id.channelLastMessage)
+        private val lastMsgTV: TextView = view.findViewById(R.id.channelLastMessage)
         private val time: TextView = view.findViewById(R.id.time)
         private val unreadMsg: TextView = view.findViewById(R.id.unreadMes)
 
         fun bind(blog: Blog, avatar: Bitmap?, clickListener: OnItemClickListener){
             title.text = blog.title
-            lastMsg.text = blog.lastMsg
+            lastMsgTV.text = blog.messages.last()
             time.text = blog.time
             unreadMsg.text = blog.unreadMsg
 
