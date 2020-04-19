@@ -41,7 +41,6 @@ class HomeFragment : Fragment(), OnItemClickListener {
         homeViewModel = binding.viewModel as HomeViewModel
         homeViewModel.activity = activity!!
         homeViewModel.context = context!!
-        homeViewModel.init()
 
         return binding.root
     }
@@ -49,16 +48,13 @@ class HomeFragment : Fragment(), OnItemClickListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        homeViewModel.init()
         val recyclerView: RecyclerView = activity!!.findViewById(R.id.recyclerView)
-
-        homeViewModel.onRefreshButtonClick()
 
         val liveData: MutableLiveData<Boolean> = homeViewModel.blogLiveData
         liveData.observe(viewLifecycleOwner, Observer {
             if (liveData.value == true) {
-                homeViewModel.init()
-
-                val refreshedAdapter = BlogListAdapter(this, homeViewModel.blogArrayList)
+                val refreshedAdapter = BlogListAdapter(this, homeViewModel.blogArrayList, homeViewModel.avatarList)
                 recyclerView.adapter = refreshedAdapter
 
                 liveData.value = false

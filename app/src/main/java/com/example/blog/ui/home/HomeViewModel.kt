@@ -4,8 +4,11 @@ package com.example.blog.ui.home
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import android.os.CountDownTimer
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
@@ -15,6 +18,7 @@ import com.example.blog.user.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
 
 
 class HomeViewModel : ViewModel() {
@@ -25,6 +29,8 @@ class HomeViewModel : ViewModel() {
     var context: Context? = null
 
     val blogLiveData: MutableLiveData<Boolean> = MutableLiveData()
+
+    var avatarList: ArrayList<Bitmap?> = arrayListOf()
     var blogArrayList: ArrayList<Blog> = arrayListOf()
 
     val userLiveData: MutableLiveData<FirebaseUser> = MutableLiveData()
@@ -53,6 +59,10 @@ class HomeViewModel : ViewModel() {
 
             if (isNetworkConnected()) {
                 val myRef: DatabaseReference = database.getReference("Blogs")
+                val maxDownloadSizeBytes: Long = 5120 * 5120
+                val storageReference = FirebaseStorage.getInstance()
+                    .reference
+                    .child("Blogs")
 
                 // Read from the database
                 myRef.addValueEventListener(object : ValueEventListener {
@@ -61,19 +71,28 @@ class HomeViewModel : ViewModel() {
                         // whenever data at this location is updated.
 
                         blogArrayList.clear()
+                        avatarList.clear()
 
                         for (blogSnapshot in dataSnapshot.children) {
                             val blog = blogSnapshot.getValue(Blog::class.java)
 
-                            if (blog != null) {
-                                Log.d("BLOG", blog.title)
-                                if (user?.subbs?.contains(blog.blogId)!!) {
-                                    blogArrayList.add(blog)
-                                }
+                            if (blog != null && user?.subbs?.contains(blog.blogId)!!) {
+                                storageReference.child(blog.title)
+                                    .child("avatar.png")
+                                    .getBytes(maxDownloadSizeBytes)
+                                    .addOnSuccessListener {
+                                        val bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                                        avatarList.add(bitmap)
+                                        blogArrayList.add(blog)
+
+                                        Log.d("SIZES", "${user?.subbs?.size} ${avatarList.size}")
+                                        if (user?.subbs?.size == avatarList.size) {
+                                            blogLiveData.value = true
+                                        }
+                                    }
                             }
                         }
                     }
-
                     override fun onCancelled(error: DatabaseError) {
                         // Failed to read value
                         Log.w("VALUE", "Failed to read value.", error.toException())
@@ -81,12 +100,12 @@ class HomeViewModel : ViewModel() {
                 })
 
                 userLiveData.value = firebaseUser
-                //По окончании загрузки
-                blogLiveData.value = true
 
+                //setRefreshTimer()
             } else displayNoConnection()
         } else displayLoginRequired()
     }
+
 
     private fun displayLoginRequired(){
         Toast.makeText(context, "You need to login first", Toast.LENGTH_SHORT).show()
@@ -103,6 +122,7 @@ class HomeViewModel : ViewModel() {
     }
 
     fun onRefreshButtonClick(){
-        blogLiveData.value = true
+        Toast.makeText(context, "Refreshing...", Toast.LENGTH_SHORT).show()
+        init()
     }
 }

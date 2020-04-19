@@ -1,5 +1,7 @@
 package com.example.blog.blog
 
+import android.graphics.Bitmap
+
 class Blog () {
     var ownerId: String = ""
     var title: String = ""
