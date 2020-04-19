@@ -64,7 +64,7 @@ class ChatFragment : Fragment(){
         liveData.observe(viewLifecycleOwner, Observer {
             if (liveData.value == true) {
 
-                val refreshedAdapter = ChatListAdapter(viewModel.messagesArrayList, viewModel.picsArrayList)
+                val refreshedAdapter = ChatListAdapter(viewModel.messagesArrayList, viewModel.picsArrayList, viewModel.timeArrayList)
                 recyclerView.adapter = refreshedAdapter
 
                 liveData.value = false

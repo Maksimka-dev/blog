@@ -12,7 +12,8 @@ import com.example.blog.R
 
 class ChatListAdapter(
     private val messages: ArrayList<String>,
-    private val pics: ArrayList<Bitmap?>
+    private val pics: ArrayList<Bitmap?>,
+    private val times: ArrayList<String>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -30,16 +31,19 @@ class ChatListAdapter(
 
         val message: String = messages[position]
         val pic: Bitmap? = pics[position]
+        val time: String = times[position]
 
-        chatHolder.bind(message, pic)
+        chatHolder.bind(message, pic, time)
     }
 
     class ChatViewHolder (view: View) : RecyclerView.ViewHolder(view){
         private val textView: TextView = view.findViewById(R.id.messageText)
         private val imageView: ImageView = view.findViewById(R.id.messagePic)
+        private val timeView: TextView = view.findViewById(R.id.timeTV)
 
-        fun bind(message: String, pic: Bitmap?){
+        fun bind(message: String, pic: Bitmap?, time: String){
             textView.text = message
+            timeView.text = time
             if (pic != null) {
                 imageView.setImageBitmap(pic)
             }

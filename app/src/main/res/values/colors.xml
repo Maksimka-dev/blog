@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#1d2733</color>
     <color name="colorPrimaryTransparent">#3d5263</color>
     <color name="colorAccent">#5ea3dc</color>
+    <color name="colorAccentLight">#99d1ff</color>
     <color name="colorMenuPrimary">#233040</color>
     <color name="colorNavBar">#161d27</color>
     <color name="colorWhite">#ffffff</color>

@@ -151,14 +151,13 @@ class ChatViewModel : ViewModel() {
     }
 
     fun onSendBtnClick(){
-        setRefreshTimer()
         if (isNetworkConnected()) {
-
             if (user!!.uid == blog.ownerId) {
+                setRefreshTimer()
 
                 val textField = activity!!.findViewById<EditText>(R.id.message)
                 //Отправляем текст
-                if (textField.text.length > 1) {
+                if (textField.text.length in 1..500) {
                     messagesArrayList.add(textField.text.toString())
 
                     val date = Date()
