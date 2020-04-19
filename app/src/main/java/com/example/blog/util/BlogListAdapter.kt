@@ -46,16 +46,19 @@ class BlogListAdapter(
 
         fun bind(blog: Blog, avatar: Bitmap?, clickListener: OnItemClickListener){
             var time = ""
-            for (i in blog.time.last().toString().indices){
-                if (i == 0 || i == blog.time.last().toString().length - 1) continue
-                else time += blog.time.last().toString()[i]
+
+            if (blog.time.isNotEmpty()) {
+                for (i in blog.time.last().toString().indices) {
+                    if (i == 0 || i == blog.time.last().toString().length - 1) continue
+                    else time += blog.time.last().toString()[i]
+                }
+
+                if(blog.messages.last().length > 30) {
+                    lastMsgTV.text = (blog.messages.last().substring(range = (0..30)) + "...")
+                } else lastMsgTV.text = blog.messages.last()
             }
 
-
             title.text = blog.title
-            if(blog.messages.last().length > 30) {
-                lastMsgTV.text = (blog.messages.last().substring(range = (0..30)) + "...")
-            } else lastMsgTV.text = blog.messages.last()
             timeTV.text = time
 
             if (avatar != null){
