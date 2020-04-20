@@ -73,6 +73,33 @@ class ChatViewModel : ViewModel() {
 
     private fun initMessages() {
         val ref: DatabaseReference = database.getReference("Blogs")
+
+        getMessages(ref)
+        getTimes(ref)
+    }
+
+    private fun getTimes(ref: DatabaseReference) {
+        ref.child("${blog.title}/time")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                    timeArrayList.clear()
+
+                    //добавляем время в массив
+                    for (chatSnapshot: DataSnapshot in dataSnapshot.children) {
+                        val time: String? = chatSnapshot.getValue(String()::class.java)
+                        timeArrayList.add(time!!)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Failed to read value
+                    Log.w("VALUE", "Failed to read value.", error.toException())
+                }
+            })
+    }
+
+    private fun getMessages(ref: DatabaseReference) {
         ref.child("${blog.title}/messages")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -85,25 +112,6 @@ class ChatViewModel : ViewModel() {
                         messagesArrayList.add(message!!)
                     }
                     lastPos = messagesArrayList.lastIndex
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    // Failed to read value
-                    Log.w("VALUE", "Failed to read value.", error.toException())
-                }
-            })
-
-        ref.child("${blog.title}/time")
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                    timeArrayList.clear()
-
-                    //добавляем время в массив
-                    for (chatSnapshot: DataSnapshot in dataSnapshot.children) {
-                        val time: String? = chatSnapshot.getValue(String()::class.java)
-                        timeArrayList.add(time!!)
-                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -155,67 +163,76 @@ class ChatViewModel : ViewModel() {
             if (user!!.uid == blog.ownerId) {
                 setRefreshTimer()
 
-                val textField = activity!!.findViewById<EditText>(R.id.message)
-                //Отправляем текст
-                if (textField.text.length in 1..500) {
-                    messagesArrayList.add(textField.text.toString())
-
-                    val date = Date()
-                    val dateFormat = SimpleDateFormat("MM.dd hh:mm", Locale.getDefault())
-                    timeArrayList.add(dateFormat.format(date))
-
-                    val messageRef = database.getReference("Blogs")
-                    messageRef.child("${blog.title}/messages")
-                        .setValue(messagesArrayList)
-                        .addOnCompleteListener(activity!!) { task->
-
-                            if (task.isSuccessful) {
-                                messageRef.child("${blog.title}/time")
-                                    .setValue(timeArrayList).addOnSuccessListener {
-                                        initMessages()
-                                    }
-
-                                if (bitmapImage == null){
-                                    bitmapImage = BitmapFactory.decodeResource(context!!.resources, R.mipmap.tiny)
-                                }
-
-                                val baos = ByteArrayOutputStream()
-                                bitmapImage!!.compress(Bitmap.CompressFormat.PNG, 100, baos)
-                                val data = baos.toByteArray()
-
-                                FirebaseStorage
-                                    .getInstance()
-                                    .getReference("Blogs")
-                                    .child("${blog.title}/${messagesArrayList.size - 1}.png")
-                                    .putBytes(data)
-                                    .addOnFailureListener {
-                                        bitmapImage = null
-                                        Toast.makeText(
-                                            context,
-                                            "Fail uploading image",
-                                            Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                        .addOnSuccessListener {
-                                            initPics()
-                                            bitmapImage = null
-                                            Toast.makeText(
-                                                context,
-                                                "Upload successful",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-
-                                //обновляем recycler view
-                                chatLiveData.value = true
-                            }
-                        }
-                    textField.setText("")
-                }
+                uploadMessage()
 
             } else Toast.makeText(context, "You are not an admin of this blog", Toast.LENGTH_SHORT).show()
 
         } else displayNoConnection()
+    }
+
+    private fun uploadMessage() {
+        val textField = activity!!.findViewById<EditText>(R.id.message)
+        //Отправляем текст
+        if (textField.text.length in 1..500) {
+            messagesArrayList.add(textField.text.toString())
+
+            val date = Date()
+            val dateFormat = SimpleDateFormat("MM.dd hh:mm", Locale.getDefault())
+            timeArrayList.add(dateFormat.format(date))
+
+            val messageRef = database.getReference("Blogs")
+            messageRef.child("${blog.title}/messages")
+                .setValue(messagesArrayList)
+                .addOnCompleteListener(activity!!) { task ->
+
+                    if (task.isSuccessful) {
+                        messageRef.child("${blog.title}/time")
+                            .setValue(timeArrayList).addOnSuccessListener {
+                                initMessages()
+                            }
+
+                        //отправляем изображение
+                        uploadPicture()
+
+                        //обновляем recycler view
+                        chatLiveData.value = true
+                    }
+                }
+            textField.setText("")
+        }
+    }
+
+    private fun uploadPicture() {
+        if (bitmapImage == null) {
+            bitmapImage = BitmapFactory.decodeResource(context!!.resources, R.mipmap.tiny)
+        }
+
+        val baos = ByteArrayOutputStream()
+        bitmapImage!!.compress(Bitmap.CompressFormat.PNG, 100, baos)
+        val data = baos.toByteArray()
+
+        FirebaseStorage
+            .getInstance()
+            .getReference("Blogs")
+            .child("${blog.title}/${messagesArrayList.size - 1}.png")
+            .putBytes(data)
+            .addOnFailureListener {
+                bitmapImage = null
+                Toast.makeText(
+                    context,
+                    "Fail uploading image",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            .addOnSuccessListener {
+                initPics()
+                bitmapImage = null
+                Toast.makeText(
+                    context,
+                    "Upload successful",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
     }
 
 

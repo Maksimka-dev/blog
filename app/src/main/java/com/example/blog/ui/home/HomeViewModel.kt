@@ -101,7 +101,6 @@ class HomeViewModel : ViewModel() {
 
                 userLiveData.value = firebaseUser
 
-                //setRefreshTimer()
             } else displayNoConnection()
         } else displayLoginRequired()
     }
