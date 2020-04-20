@@ -48,10 +48,7 @@ class BlogListAdapter(
             var time = ""
 
             if (blog.time.isNotEmpty()) {
-                for (i in blog.time.last().toString().indices) {
-                    if (i == 0 || i == blog.time.last().toString().length - 1) continue
-                    else time += blog.time.last().toString()[i]
-                }
+                time = blog.time.last().toString()
 
                 if(blog.messages.last().length > 30) {
                     lastMsgTV.text = (blog.messages.last().substring(range = (0..30)) + "...")
