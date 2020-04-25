@@ -2,18 +2,19 @@ package com.example.blog.login
 
 import androidx.lifecycle.ViewModel
 import com.example.blog.livedata.mutableLiveData
+import com.google.firebase.auth.FirebaseAuth
 
 class LogInViewModel : ViewModel() {
     val isLoginDialogOpen = mutableLiveData(false)
 
-    val username = mutableLiveData<String>(null)
+    val email = mutableLiveData<String>(FirebaseAuth.getInstance().currentUser?.email)
 
     fun handleLoginButtonClick() {
         isLoginDialogOpen.value = true
     }
 
-    fun handleSuccessfulLogin(username: String) {
-        this.username.value = username
+    fun handleSuccessfulLogin(email: String) {
+        this.email.value = email
         isLoginDialogOpen.value = false
     }
 

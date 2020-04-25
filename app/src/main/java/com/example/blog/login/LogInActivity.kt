@@ -7,9 +7,8 @@ import com.example.blog.R
 import com.example.blog.databinding.ActivityLoginBinding
 import com.example.blog.viewmodel.viewModel
 import com.example.blog.inflaters.contentView
-import com.example.blog.signin.SignInDialogFragment
 
-class LogInActivity : AppCompatActivity(), SignInDialogFragment.Listener  {
+class LogInActivity : AppCompatActivity(), LogInDialogFragment.Listener  {
     private val model by viewModel<LogInViewModel>()
     private val binding by contentView<ActivityLoginBinding>(R.layout.activity_login)
 
@@ -40,8 +39,8 @@ class LogInActivity : AppCompatActivity(), SignInDialogFragment.Listener  {
         loginDialogFragment?.dismiss()
     }
 
-    override fun onLogin(username: String) {
-        model.handleSuccessfulLogin(username)
+    override fun onLogin(email: String) {
+        model.handleSuccessfulLogin(email)
     }
 
     override fun onCancel() {

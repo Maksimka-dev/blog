@@ -18,13 +18,26 @@
         android:padding="16dp">
 
         <EditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:enabled="@{!model.isLoading}"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:text="@={model.email}"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="16dp" />
+
+        <EditText
             android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:enabled="@{!model.isLoading}"
             android:hint="Username"
             android:text="@={model.username}"
-            tools:ignore="MissingConstraints" />
+            app:layout_constraintTop_toBottomOf="@id/email" />
 
         <EditText
             android:id="@+id/password"

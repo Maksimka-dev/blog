@@ -22,9 +22,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:enabled="@{!model.isLoading}"
-            android:hint="Username"
-            android:text="@={model.username}"
-            tools:ignore="MissingConstraints" />
+            android:hint="Email"
+            android:ems="10"
+            android:inputType="textEmailAddress"
+            android:text="@={model.email}"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="16dp" />
 
         <EditText
             android:id="@+id/password"

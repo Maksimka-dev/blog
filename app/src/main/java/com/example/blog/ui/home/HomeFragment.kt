@@ -16,7 +16,6 @@ import com.example.blog.blog.Blog
 import com.example.blog.blog.BlogFragment
 import com.example.blog.databinding.FragmentHomeBinding
 import com.example.blog.ui.chat.ChatFragment
-import com.example.blog.ui.signIn.SignInFragment
 import com.example.blog.util.BlogListAdapter
 import com.example.blog.util.OnItemClickListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton

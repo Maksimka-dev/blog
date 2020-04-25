@@ -3,11 +3,10 @@ package com.example.blog.login
 import androidx.lifecycle.ViewModel
 import com.example.blog.livedata.SingleLiveEvent
 import com.example.blog.livedata.mutableLiveData
-import java.util.*
-import kotlin.concurrent.schedule
+import com.google.firebase.auth.FirebaseAuth
 
 class LogInDialogViewModel : ViewModel() {
-    val username = mutableLiveData("")
+    val email = mutableLiveData("")
     val password = mutableLiveData("")
 
     val remember = mutableLiveData(true)
@@ -19,23 +18,33 @@ class LogInDialogViewModel : ViewModel() {
     val loggedInCommand = SingleLiveEvent<Void>()
     val cancelledCommand = SingleLiveEvent<Void>()
 
+    private val mAuth = FirebaseAuth.getInstance()
+
     fun handleLoginButtonClick() {
-        if (username.value.isNullOrBlank() || password.value.isNullOrBlank()) {
+        if (email.value.isNullOrBlank() || password.value.isNullOrBlank()) {
             validationErrorCommand.call()
             return
         }
 
-        isLoading.value = true
+        logIn()
 
-        Timer().schedule(3000) {
-            //uiThread {
-                isLoading.value = false
-                loggedInCommand.call()
-            //}
-        }
+        isLoading.value = true
     }
 
     fun handleCancel() {
         cancelledCommand.call()
+    }
+
+    private fun logIn(){
+        mAuth.signInWithEmailAndPassword(email.value.toString(), password.value.toString())
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    loggedInCommand.call()
+                    isLoading.value = false
+                } else {
+                    validationErrorCommand.call()
+                }
+            }
     }
 }

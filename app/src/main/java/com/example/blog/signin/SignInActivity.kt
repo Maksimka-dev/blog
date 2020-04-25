@@ -39,8 +39,8 @@ class SignInActivity : AppCompatActivity(), SignInDialogFragment.Listener  {
         loginDialogFragment?.dismiss()
     }
 
-    override fun onLogin(username: String) {
-        model.handleSuccessfulLogin(username)
+    override fun onLogin(email: String) {
+        model.handleSuccessfulLogin(email)
     }
 
     override fun onCancel() {

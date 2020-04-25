@@ -32,7 +32,7 @@ class LogInDialogFragment : DialogFragment() {
         }
 
         model.loggedInCommand.observe(this) {
-            listener.onLogin(model.username.value!!)
+            listener.onLogin(model.email.value!!)
         }
 
         model.cancelledCommand.observe(this) {
@@ -73,7 +73,7 @@ class LogInDialogFragment : DialogFragment() {
     }
 
     interface Listener {
-        fun onLogin(username: String)
+        fun onLogin(email: String)
         fun onCancel()
     }
 }
