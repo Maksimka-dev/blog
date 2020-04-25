@@ -1,6 +1,7 @@
 package com.example.blog.user
 
-data class User(var name: String) {
+class User() {
+    var name: String = ""
     var email: String = ""
     val subbs: ArrayList<String> = arrayListOf()
 

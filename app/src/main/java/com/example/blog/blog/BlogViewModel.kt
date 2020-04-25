@@ -25,7 +25,7 @@ class BlogViewModel : ViewModel() {
     var context: Context? = null
 
     var userId: String? = null
-    var blog: Blog = Blog("")
+    var blog: Blog = Blog()
 
     var title: String = ""
     var description: String = ""
