@@ -1,4 +1,4 @@
-package azadev.android.architecture.core.view
+package com.example.blog.view
 
 import android.view.ViewGroup
 

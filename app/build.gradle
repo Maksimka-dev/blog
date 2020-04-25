@@ -9,7 +9,9 @@ apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+
+    buildToolsVersion "29.0.3"
+
     defaultConfig {
         applicationId "com.example.blog"
         minSdkVersion 23
@@ -18,12 +20,26 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+
+    defaultConfig {
+        versionCode 1
+        versionName "1.0"
+
+        minSdkVersion 15
+        //noinspection OldTargetApi
+        targetSdkVersion 27
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
     dataBinding {
         enabled = true
     }

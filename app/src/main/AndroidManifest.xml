@@ -25,6 +25,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".blog.BlogActivity">
+
+        </activity>
+
+        <activity android:name=".findblog.FindBlogActivity">
+
+        </activity>
+
+        <activity android:name=".login.LogInActivity">
+
+        </activity>
+
+        <activity android:name=".newblog.NewBlogActivity">
+
+        </activity>
+
+        <activity android:name=".signin.SignInActivity">
+
+        </activity>
+
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

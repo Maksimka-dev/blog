@@ -4,20 +4,11 @@ package com.example.blog.main
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import android.view.Menu
 import android.widget.Button
-import azadev.android.architecture.core.databinding.inflaters.contentView
-import azadev.android.architecture.core.view.MATCH_PARENT
-import azadev.android.architecture.core.view.WRAP_CONTENT
+import com.example.blog.inflaters.contentView
+import com.example.blog.view.MATCH_PARENT
+import com.example.blog.view.WRAP_CONTENT
 import com.example.blog.R
 import com.example.blog.blog.BlogActivity
 import com.example.blog.databinding.ActivityMainBinding
