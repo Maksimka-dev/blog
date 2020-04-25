@@ -39,7 +39,7 @@ class HomeViewModel : ViewModel() {
         val firebaseUser = mAuth.currentUser
 
         //Получаем пользователя из бд чтобы проверить есть ли канал в его подписках
-        var user: User? = User()
+        var user: User? = User("")
 
         if (firebaseUser != null) {
             val userRef = FirebaseDatabase.getInstance()

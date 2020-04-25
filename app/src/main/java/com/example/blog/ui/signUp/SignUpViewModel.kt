@@ -38,7 +38,7 @@ class SignUpViewModel : ViewModel() {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d("CREATE USER", "createUserWithEmail:success")
 
-                        val user = User()
+                        val user = User("")
                         user.email = email
                         user.name = name
 

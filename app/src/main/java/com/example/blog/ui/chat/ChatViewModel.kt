@@ -37,7 +37,7 @@ class ChatViewModel : ViewModel() {
 
     var lastPos = 0
 
-    var blog: Blog = Blog()
+    var blog: Blog = Blog("")
     var title: String = ""
 
     var messagesArrayList: ArrayList<String> = arrayListOf()
