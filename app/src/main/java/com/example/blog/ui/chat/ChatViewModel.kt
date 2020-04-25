@@ -61,9 +61,6 @@ class ChatViewModel : ViewModel() {
         timeArrayList = blog.time
         lastPos = messagesArrayList.lastIndex
 
-        val toolbar: androidx.appcompat.widget.Toolbar = activity!!.findViewById(R.id.toolbar)
-        toolbar.title = blog.title
-
         initMessages()
 
         initPics()

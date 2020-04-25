@@ -55,11 +55,6 @@ class BlogFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val toolbar: androidx.appcompat.widget.Toolbar = activity!!.findViewById(R.id.toolbar)
-        toolbar.title = "Create blog"
-
-        val fab = activity!!.findViewById<FloatingActionButton>(R.id.fab)
-        fab.hide()
 
         val confirmFab = activity!!.findViewById<FloatingActionButton>(R.id.confirmFab)
         confirmFab.show()
@@ -76,11 +71,6 @@ class BlogFragment : Fragment() {
 
                 val fragment = ChatFragment.newInstance()
                 fragment.arguments = bundle
-
-                activity!!.supportFragmentManager.beginTransaction()
-                    .replace(R.id.nav_host_fragment, fragment)
-                    .addToBackStack("blog")
-                    .commit()
 
                 liveData.value = false
             }

@@ -48,16 +48,13 @@ class SignInFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val fab: FloatingActionButton = activity!!.findViewById(R.id.fab)
-        fab.hide()
+
 
         val user = FirebaseAuth.getInstance().currentUser
         if (user == null) {
             val signUpTW = activity!!.findViewById<TextView>(R.id.signUpTextView)
             signUpTW.setOnClickListener {
-                activity!!.supportFragmentManager.beginTransaction()
-                    .replace(R.id.nav_host_fragment, SignUpFragment.newInstance())
-                    .commit()
+
                 activity!!.supportFragmentManager.popBackStack()
             }
         }
@@ -67,9 +64,7 @@ class SignInFragment : Fragment() {
         val liveData = viewModel.liveData
         liveData.observe(viewLifecycleOwner, Observer {
             if (liveData.value == true){
-                activity!!.supportFragmentManager.beginTransaction()
-                    .replace(R.id.nav_host_fragment, HomeFragment.newInstance())
-                    .commit()
+
                 activity!!.supportFragmentManager.popBackStack()
             }
         })

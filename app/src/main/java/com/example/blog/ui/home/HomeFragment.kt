@@ -61,24 +61,11 @@ class HomeFragment : Fragment(), OnItemClickListener {
             }
         })
 
-        val fab: FloatingActionButton = activity!!.findViewById(R.id.fab)
-        fab.hide()
-
-        val refreshFab: FloatingActionButton = activity!!.findViewById(R.id.refreshBtn)
-        refreshFab.show()
-
-        val addFab: FloatingActionButton = activity!!.findViewById(R.id.addFab)
-        addFab.show()
 
         val userLiveData = homeViewModel.userLiveData
         userLiveData.observe(viewLifecycleOwner, Observer {
             if (userLiveData.value != null) {
-                addFab.setOnClickListener{
-                    activity!!.supportFragmentManager.beginTransaction()
-                        .replace(R.id.nav_host_fragment, BlogFragment.newInstance())
-                        .addToBackStack("blog")
-                        .commit()
-                }
+
             }
         })
     }
@@ -94,9 +81,6 @@ class HomeFragment : Fragment(), OnItemClickListener {
         val fragment = ChatFragment.newInstance()
         fragment.arguments = bundle
 
-        activity!!.supportFragmentManager.beginTransaction()
-            .replace(R.id.nav_host_fragment, fragment)
-            .addToBackStack("blog")
-            .commit()
+
     }
 }
