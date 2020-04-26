@@ -14,12 +14,10 @@ import com.example.blog.blog.BlogActivity
 import com.example.blog.databinding.ActivityMainBinding
 import com.example.blog.findblog.FindBlogActivity
 import com.example.blog.login.LogInActivity
-import com.example.blog.newblog.NewBlogActivity
 import com.example.blog.signin.SignInActivity
 
 private val PARTS = arrayOf(
     "Blogs" to BlogActivity::class.java,
-    "New blog" to NewBlogActivity::class.java,
     "Find blog" to FindBlogActivity::class.java,
     "Log in" to LogInActivity::class.java,
     "Sign in" to SignInActivity::class.java

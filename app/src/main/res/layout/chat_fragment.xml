@@ -7,7 +7,7 @@
         </import>
         
         <variable
-            name="viewModel"
+            name="model"
             type="com.example.blog.ui.chat.ChatViewModel" />
     </data>
 
@@ -17,14 +17,15 @@
         android:background="@color/colorPrimaryDark">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/messagesRecyclerView"
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/message"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/message"/>
 
         <Button
             android:id="@+id/clipBtn"
@@ -52,7 +53,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/sendBtn"
             app:layout_constraintStart_toEndOf="@+id/clipBtn"
-            app:layout_constraintTop_toBottomOf="@+id/messagesRecyclerView"
+            app:layout_constraintTop_toBottomOf="@+id/recyclerView"
             tools:ignore="Autofill" />
 
         <Button
@@ -62,7 +63,7 @@
             android:layout_marginEnd="8dp"
             android:background="@drawable/send"
             android:elevation="1dp"
-            android:onClick="@{(view) -> viewModel.onSendBtnClick()}"
+            android:onClick="@{(view) -> model.onSendBtnClick()}"
             app:layout_constraintBottom_toBottomOf="@+id/message"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/message" />

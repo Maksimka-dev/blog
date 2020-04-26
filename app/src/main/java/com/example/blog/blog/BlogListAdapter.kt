@@ -37,14 +37,13 @@ class BlogListAdapter   (
         }
 
         holder.binding.model = model
+        holder.binding.blog = blog
 
         holder.binding.channelLastMessage.text = lastMsg
         holder.binding.time.text = time
         holder.binding.title.text = title
 
-        if (avatar != null){
-            holder.binding.channelAvatar.setImageBitmap(avatar)
-        }
+        if (avatar != null) holder.binding.channelAvatar.setImageBitmap(avatar)
     }
 
     override fun getItemCount() = data.first.size

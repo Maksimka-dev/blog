@@ -9,14 +9,16 @@ import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.blog.R
 import com.example.blog.blog.Blog
+import com.example.blog.livedata.SingleLiveEvent
+import com.example.blog.livedata.mutableLiveData
+import com.example.blog.view.MAX_DOWNLOAD_SIZE_BYTES
+import com.example.blog.view.MAX_MESSAGE_LENGTH
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -28,137 +30,96 @@ import kotlin.collections.ArrayList
 
 
 class ChatViewModel : ViewModel() {
-    var activity: Activity? = null
-    var context: Context? = null
-    var bundle: Bundle? = null
+
+    val items: MutableLiveData<Triple<List<String>, List<Bitmap?>, List<String>>> = mutableLiveData()
 
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val storage: FirebaseStorage = FirebaseStorage.getInstance()
 
-    var lastPos = 0
-
     var blog: Blog = Blog()
-    var title: String = ""
 
-    var messagesArrayList: ArrayList<String> = arrayListOf()
-    var timeArrayList: ArrayList<String> = arrayListOf()
-    var picsArrayList: ArrayList<Bitmap?> = arrayListOf(null)
+    val messageCommand = SingleLiveEvent<Void>()
+    val timeCommand = SingleLiveEvent<Void>()
+    val imageCommand = SingleLiveEvent<Void>()
+
+    fun setUp(){
+        items.value = Triple(messages as List<String>, images as List<Bitmap?>, time as List<String>)
+    }
+
+    var activity: Activity? = null
+    var context: Context? = null
+    var bundle: Bundle? = null
+
+    var messages: ArrayList<String> = arrayListOf()
+    var time: ArrayList<String> = arrayListOf()
+    var images: ArrayList<Bitmap?> = arrayListOf(null)
 
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
 
-    val chatLiveData: MutableLiveData<Boolean> = MutableLiveData()
-
     var bitmapImage: Bitmap? = null
 
-    fun createView(){
-        blog.title = bundle!!.getString("title", "")
-        blog.blogId = bundle!!.getString("blogId", "")
-        blog.messages = bundle!!.getStringArrayList("messages")!!
-        blog.time = bundle!!.getStringArrayList("time")!!
-        blog.ownerId = bundle!!.getString("ownerId", "")
 
-        messagesArrayList = blog.messages
-        timeArrayList = blog.time
-        lastPos = messagesArrayList.lastIndex
-
-        initMessages()
-
-        initPics()
-
-        Log.d("SIZES", "${picsArrayList.size} - ${messagesArrayList.size}")
-    }
-
-    private fun initMessages() {
+    fun getTime() {
         val ref: DatabaseReference = database.getReference("Blogs")
-
-        getMessages(ref)
-        getTimes(ref)
-    }
-
-    private fun getTimes(ref: DatabaseReference) {
         ref.child("${blog.title}/time")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                    timeArrayList.clear()
-
-                    //добавляем время в массив
+                    time.clear()
                     for (chatSnapshot: DataSnapshot in dataSnapshot.children) {
                         val time: String? = chatSnapshot.getValue(String()::class.java)
-                        timeArrayList.add(time!!)
+                        this@ChatViewModel.time.add(time!!)
                     }
                 }
-
                 override fun onCancelled(error: DatabaseError) {
-                    // Failed to read value
-                    Log.w("VALUE", "Failed to read value.", error.toException())
                 }
             })
+        timeCommand.call()
     }
 
-    private fun getMessages(ref: DatabaseReference) {
+    fun getMessages() {
+        blog.title = bundle!!.getString("title", "")
+        blog.blogId = bundle!!.getString("blogId", "")
+        blog.ownerId = bundle!!.getString("ownerId", "")
+
+        val ref: DatabaseReference = database.getReference("Blogs")
         ref.child("${blog.title}/messages")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                    messagesArrayList.clear()
-
-                    //добавляем сообщение в массив
+                    messages.clear()
                     for (chatSnapshot: DataSnapshot in dataSnapshot.children) {
                         val message: String? = chatSnapshot.getValue(String()::class.java)
-                        messagesArrayList.add(message!!)
+                        messages.add(message!!)
                     }
-                    lastPos = messagesArrayList.lastIndex
                 }
-
                 override fun onCancelled(error: DatabaseError) {
-                    // Failed to read value
-                    Log.w("VALUE", "Failed to read value.", error.toException())
                 }
             })
+        messageCommand.call()
     }
 
-    private fun initPics(){
-        setRefreshTimer()
-        //добавляем картинку в массив
-        val maxDownloadSizeBytes: Long = 5120 * 5120
-
-        picsArrayList = arrayListOf()
-        for (i in 0..messagesArrayList.size){
-            picsArrayList.add(null)
+    fun getImages(){
+        images = arrayListOf()
+        for (i in 0..messages.size){
+            images.add(null)
         }
 
-        for (i in 0..messagesArrayList.size) {
+        for (i in 0..messages.size) {
             val imageRef = storage.reference
                 .child("Blogs")
                 .child(blog.title)
                 .child("$i.png")
 
-            imageRef.getBytes(maxDownloadSizeBytes)
+            imageRef.getBytes(MAX_DOWNLOAD_SIZE_BYTES)
                 .addOnSuccessListener {
-                    picsArrayList[i] = BitmapFactory.decodeByteArray(it, 0, it.size)
+                    images[i] = BitmapFactory.decodeByteArray(it, 0, it.size)
                 }
         }
-    }
-
-    private fun setRefreshTimer(){
-        Toast.makeText(context, "Refreshing...", Toast.LENGTH_SHORT).show()
-        object : CountDownTimer(2000, 2000) {
-            override fun onTick(millisUntilFinished: Long) {
-
-            }
-
-            override fun onFinish() {
-                //обновить recycler view
-                chatLiveData.value = true
-            }
-        }.start()
+        imageCommand.call()
     }
 
     fun onSendBtnClick(){
         if (isNetworkConnected()) {
             if (user!!.uid == blog.ownerId) {
-                setRefreshTimer()
 
                 uploadMessage()
 
@@ -169,30 +130,22 @@ class ChatViewModel : ViewModel() {
 
     private fun uploadMessage() {
         val textField = activity!!.findViewById<EditText>(R.id.message)
-        //Отправляем текст
-        if (textField.text.length in 1..500) {
-            messagesArrayList.add(textField.text.toString())
-
-            val date = Date()
-            val dateFormat = SimpleDateFormat("MM.dd hh:mm", Locale.getDefault())
-            timeArrayList.add(dateFormat.format(date))
+        if (textField.text.length in 1..MAX_MESSAGE_LENGTH) {
 
             val messageRef = database.getReference("Blogs")
             messageRef.child("${blog.title}/messages")
-                .setValue(messagesArrayList)
-                .addOnCompleteListener(activity!!) { task ->
-
+                .setValue(messages)
+                .addOnCompleteListener{ task ->
                     if (task.isSuccessful) {
+                        messages.add(textField.text.toString())
+
+                        val date = Date()
+                        val dateFormat = SimpleDateFormat("MM.dd hh:mm", Locale.getDefault())
+                        time.add(dateFormat.format(date))
                         messageRef.child("${blog.title}/time")
-                            .setValue(timeArrayList).addOnSuccessListener {
-                                initMessages()
+                            .setValue(time).addOnSuccessListener {
+                                uploadPicture()
                             }
-
-                        //отправляем изображение
-                        uploadPicture()
-
-                        //обновляем recycler view
-                        chatLiveData.value = true
                     }
                 }
             textField.setText("")
@@ -204,6 +157,8 @@ class ChatViewModel : ViewModel() {
             bitmapImage = BitmapFactory.decodeResource(context!!.resources, R.mipmap.tiny)
         }
 
+        images.add(bitmapImage)
+
         val baos = ByteArrayOutputStream()
         bitmapImage!!.compress(Bitmap.CompressFormat.PNG, 100, baos)
         val data = baos.toByteArray()
@@ -211,24 +166,20 @@ class ChatViewModel : ViewModel() {
         FirebaseStorage
             .getInstance()
             .getReference("Blogs")
-            .child("${blog.title}/${messagesArrayList.size - 1}.png")
+            .child("${blog.title}/${messages.size - 1}.png")
             .putBytes(data)
             .addOnFailureListener {
                 bitmapImage = null
-                Toast.makeText(
-                    context,
-                    "Fail uploading image",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
             .addOnSuccessListener {
-                initPics()
+                items.value =
+                    Triple(
+                        messages as List<String>,
+                        images as List<Bitmap?>,
+                        time as List<String>
+                    )
+                getImages()
                 bitmapImage = null
-                Toast.makeText(
-                    context,
-                    "Upload successful",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
     }
 

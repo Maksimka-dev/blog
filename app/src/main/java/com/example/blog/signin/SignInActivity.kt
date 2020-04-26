@@ -13,7 +13,7 @@ class SignInActivity : AppCompatActivity(), SignInDialogFragment.Listener  {
     private val binding by contentView<ActivitySigninBinding>(R.layout.activity_signin)
 
     private val loginDialogFragment
-        get() = supportFragmentManager.findFragmentByTag("LoginDialog") as? SignInDialogFragment
+        get() = supportFragmentManager.findFragmentByTag("SigninDialog") as? SignInDialogFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +32,7 @@ class SignInActivity : AppCompatActivity(), SignInDialogFragment.Listener  {
 
     private fun openLoginDialog() {
         loginDialogFragment
-            ?: SignInDialogFragment().show(supportFragmentManager, "LoginDialog")
+            ?: SignInDialogFragment().show(supportFragmentManager, "SigninDialog")
     }
 
     private fun closeLoginDialog() {

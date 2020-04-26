@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import com.example.blog.livedata.SingleLiveEvent
 import com.example.blog.livedata.mutableLiveData
 import com.example.blog.user.User
+import com.example.blog.view.MAX_DOWNLOAD_SIZE_BYTES
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -22,6 +23,8 @@ class BlogViewModel : ViewModel() {
 
     val progressVisibility: MutableLiveData<Int> = mutableLiveData(View.VISIBLE)
 
+    val isCreateDialogOpen = mutableLiveData(false)
+
     private val mAuth = FirebaseAuth.getInstance()
 
     private var user: User? = User()
@@ -29,17 +32,20 @@ class BlogViewModel : ViewModel() {
 
     private var database: FirebaseDatabase = FirebaseDatabase.getInstance()
 
+    var blog = Blog()
+
+    val openCommand = SingleLiveEvent<Void>()
+
     var avatarList: ArrayList<Bitmap?> = arrayListOf()
     var blogArrayList: ArrayList<Blog> = arrayListOf()
-
-    val loadCommand = SingleLiveEvent<Void>()
 
     fun handleFindClick() {
         //items.value = items.value!! + generateItems()
     }
 
-    fun handleOpenCLick(blog: Blog){
-
+    fun handleOpenCLick(currentBlog: Blog){
+        blog = currentBlog
+        openCommand.call()
     }
 
     fun generateItems(){
@@ -51,10 +57,8 @@ class BlogViewModel : ViewModel() {
             userRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     user = dataSnapshot.getValue(User::class.java)
-                    Log.w("GENERATEITEMS", "${user.toString()}___________")
 
                     val databaseRef: DatabaseReference = database.getReference("Blogs")
-                    val maxDownloadSizeBytes: Long = 5000 * 5000
                     val storageReference = FirebaseStorage.getInstance()
                         .reference
                         .child("Blogs")
@@ -71,7 +75,7 @@ class BlogViewModel : ViewModel() {
                                 if (blog != null && user?.subbs?.contains(blog.blogId)!!) {
                                     storageReference.child(blog.title)
                                         .child("avatar.png")
-                                        .getBytes(maxDownloadSizeBytes)
+                                        .getBytes(MAX_DOWNLOAD_SIZE_BYTES)
                                         .addOnSuccessListener {
                                             val bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
                                             avatarList.add(bitmap)
@@ -79,9 +83,7 @@ class BlogViewModel : ViewModel() {
 
                                             if (user?.subbs?.size == avatarList.size) {
                                                 items.value = Pair(blogArrayList as List<Blog>, avatarList as List<Bitmap?>)
-                                                loadCommand.call()
                                                 progressVisibility.value = View.INVISIBLE
-                                                Log.d("Add", "____________________")
                                             }
                                         }
                                 }
@@ -97,7 +99,13 @@ class BlogViewModel : ViewModel() {
         }
     }
 
+    fun handleSuccessfulCreate(){
+        //refresh
+    }
 
+    fun handleCreateButtonClick(){
+        isCreateDialogOpen.value = true
+    }
 
 
     private fun displayNameTooShort(){
