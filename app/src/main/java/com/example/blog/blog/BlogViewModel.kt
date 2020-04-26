@@ -2,123 +2,119 @@
 
 package com.example.blog.blog
 
-import android.app.Activity
-import android.content.Context
 import android.graphics.Bitmap
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
+import android.graphics.BitmapFactory
 import android.util.Log
-import android.widget.Toast
+import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.blog.livedata.SingleLiveEvent
+import com.example.blog.livedata.mutableLiveData
 import com.example.blog.user.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
-import java.io.ByteArrayOutputStream
+import java.util.*
 
 class BlogViewModel : ViewModel() {
-    var activity: Activity? = null
-    var context: Context? = null
 
-    var userId: String? = null
-    var blog: Blog = Blog()
+    val items: MutableLiveData<Pair<List<Blog>, List<Bitmap?>>> = mutableLiveData()
 
-    var title: String = ""
-    var description: String = ""
+    val progressVisibility: MutableLiveData<Int> = mutableLiveData(View.VISIBLE)
 
-    val changeFragmentLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    private val mAuth = FirebaseAuth.getInstance()
 
-    var bitmapImage: Bitmap? = null
+    private var user: User? = User()
+    private val firebaseUser = mAuth.currentUser
 
-    fun createBlog(){
-        if (isNetworkConnected()) {
-            if (bitmapImage != null) {
-                if (title.length > 1) {
-                    blog.title = title
-                    blog.description = description
-                    blog.ownerId = userId!!
+    private var database: FirebaseDatabase = FirebaseDatabase.getInstance()
 
-                    val source = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-                    blog.blogId = (1..25)
-                        .map { source.random() }
-                        .joinToString("")
+    var avatarList: ArrayList<Bitmap?> = arrayListOf()
+    var blogArrayList: ArrayList<Blog> = arrayListOf()
 
-                    //Создаем блог в базе данных
-                    FirebaseDatabase.getInstance()
-                        .getReference("Blogs")
-                        .child(blog.title)
-                        .setValue(blog)
-                        .addOnCompleteListener(activity!!) { task ->
-                            if (task.isSuccessful) {
+    val loadCommand = SingleLiveEvent<Void>()
 
-                                //Добавляем иконку блога в хранилище
-                                val baos = ByteArrayOutputStream()
-                                bitmapImage!!.compress(Bitmap.CompressFormat.PNG, 100, baos)
-                                val data = baos.toByteArray()
-
-                                FirebaseStorage.getInstance()
-                                    .reference
-                                    .child("Blogs")
-                                    .child(blog.title)
-                                    .child("avatar.png")
-                                    .putBytes(data)
-                                    .addOnCompleteListener {
-                                        changeFragmentLiveData.value = true
-                                    }
-                            }
-                        }
-
-
-                    //Добавляем канал в подписки
-                    var user: User?
-
-                    val userRef = FirebaseDatabase.getInstance()
-                        .getReference("Users/${FirebaseAuth.getInstance().currentUser!!.uid}")
-
-                    userRef.addValueEventListener(object : ValueEventListener {
-
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            user = dataSnapshot.getValue(User::class.java)
-
-                            if (!user?.subbs?.contains(blog.blogId)!!) {
-                                user?.subbs?.add(blog.blogId)
-                                Log.d("SUBBS", user!!.subbs[0])
-
-                                //Запись в подписки
-                                FirebaseDatabase.getInstance()
-                                    .getReference("Users/${FirebaseAuth.getInstance().currentUser!!.uid}/subbs")
-                                    .setValue(user!!.subbs)
-                            }
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-                            Log.w("VALUE", "Failed to read value.", error.toException())
-                        }
-                    })
-                } else displayNameTooShort()
-            } else displayNoAvatar()
-        } else displayNoConnection()
+    fun handleFindClick() {
+        //items.value = items.value!! + generateItems()
     }
 
+    fun handleOpenCLick(blog: Blog){
+
+    }
+
+    fun generateItems(){
+        progressVisibility.value = View.VISIBLE
+
+        if (firebaseUser != null) {
+            val userRef = FirebaseDatabase.getInstance()
+                .getReference("Users/${firebaseUser.uid}")
+            userRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    user = dataSnapshot.getValue(User::class.java)
+                    Log.w("GENERATEITEMS", "${user.toString()}___________")
+
+                    val databaseRef: DatabaseReference = database.getReference("Blogs")
+                    val maxDownloadSizeBytes: Long = 5000 * 5000
+                    val storageReference = FirebaseStorage.getInstance()
+                        .reference
+                        .child("Blogs")
+
+                    databaseRef.addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                            blogArrayList.clear()
+                            avatarList.clear()
+
+                            for (blogSnapshot in dataSnapshot.children) {
+                                val blog = blogSnapshot.getValue(Blog::class.java)
+
+                                if (blog != null && user?.subbs?.contains(blog.blogId)!!) {
+                                    storageReference.child(blog.title)
+                                        .child("avatar.png")
+                                        .getBytes(maxDownloadSizeBytes)
+                                        .addOnSuccessListener {
+                                            val bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                                            avatarList.add(bitmap)
+                                            blogArrayList.add(blog)
+
+                                            if (user?.subbs?.size == avatarList.size) {
+                                                items.value = Pair(blogArrayList as List<Blog>, avatarList as List<Bitmap?>)
+                                                loadCommand.call()
+                                                progressVisibility.value = View.INVISIBLE
+                                                Log.d("Add", "____________________")
+                                            }
+                                        }
+                                }
+                            }
+                        }
+                        override fun onCancelled(error: DatabaseError) {
+                        }
+                    })
+                }
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
+        }
+    }
+
+
+
+
     private fun displayNameTooShort(){
-        Toast.makeText(context, "Title is too short", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(context, "Title is too short", Toast.LENGTH_SHORT).show()
     }
 
     private fun displayNoAvatar(){
-        Toast.makeText(context, "Select blog's icon first", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(context, "Select blog's icon first", Toast.LENGTH_SHORT).show()
     }
 
     private fun displayNoConnection(){
-        Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show()
     }
 
-    private fun isNetworkConnected(): Boolean {
-        val cm = context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
-        return activeNetwork?.isConnectedOrConnecting == true
-    }
+    //private fun isNetworkConnected(): Boolean {
+    //    val cm = context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    //    val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+    //    return activeNetwork?.isConnectedOrConnecting == true
+    //}
 }
