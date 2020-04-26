@@ -28,7 +28,8 @@
             android:clickable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/refresh" />
+            app:srcCompat="@drawable/refresh"
+            android:layout_marginRight="16dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/addFab"
@@ -39,7 +40,9 @@
             android:clickable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/plus" />
+            app:srcCompat="@drawable/plus"
+            android:layout_marginLeft="16dp"
+            android:focusable="true" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"

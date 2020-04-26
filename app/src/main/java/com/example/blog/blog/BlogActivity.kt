@@ -1,6 +1,8 @@
 package com.example.blog.blog
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -8,7 +10,7 @@ import com.example.blog.R
 import com.example.blog.databinding.ActivityBlogBinding
 import com.example.blog.inflaters.contentView
 import com.example.blog.newblog.NewBlogDialogFragment
-import com.example.blog.ui.chat.ChatFragment
+import com.example.blog.ui.chat.ChatActivity
 import com.example.blog.viewmodel.viewModel
 
 class BlogActivity : AppCompatActivity(), NewBlogDialogFragment.Listener{
@@ -58,18 +60,12 @@ class BlogActivity : AppCompatActivity(), NewBlogDialogFragment.Listener{
     }
 
     private fun onOpen(blog: Blog) {
-        val bundle = Bundle()
-        bundle.putString("title", blog.title)
-        bundle.putString("blogId", blog.blogId)
-        bundle.putString("ownerId", blog.ownerId)
+        val intent = Intent(this, ChatActivity::class.java)
+        intent.putExtra("title", blog.title)
+        intent.putExtra("blogId", blog.blogId)
+        intent.putExtra("ownerId", blog.ownerId)
 
-        val fragment = ChatFragment.newInstance()
-        fragment.arguments = bundle
-
-        supportFragmentManager.beginTransaction()
-            .add(R.id.container, fragment)
-            .addToBackStack(null)
-            .commit()
+        startActivity(intent)
     }
 
     override fun onCreateBlog(title: String) {

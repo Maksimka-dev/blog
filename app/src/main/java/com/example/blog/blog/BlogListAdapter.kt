@@ -32,8 +32,8 @@ class BlogListAdapter   (
             time = blog.time.last().toString()
         }
 
-        if (blog.messages.last().isNotEmpty()){
-            lastMsg = blog.messages.last()
+        if (blog.messages.isNotEmpty()){
+            lastMsg = blog.messages.last().toString()
         }
 
         holder.binding.model = model

@@ -3,9 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
-        <import type="android.view.View">
-        </import>
-        
         <variable
             name="model"
             type="com.example.blog.ui.chat.ChatViewModel" />
@@ -36,7 +33,8 @@
             android:elevation="1dp"
             app:layout_constraintBottom_toBottomOf="@+id/message"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/message" />
+            app:layout_constraintTop_toTopOf="@+id/message"
+            android:layout_marginLeft="8dp" />
 
         <EditText
             android:id="@+id/message"
@@ -46,6 +44,7 @@
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="16dp"
             android:ems="10"
+            android:text="@={model.textField}"
             android:gravity="start|top"
             android:hint="@string/type"
             android:inputType="textMultiLine"
@@ -62,11 +61,11 @@
             android:layout_height="32dp"
             android:layout_marginEnd="8dp"
             android:background="@drawable/send"
-            android:elevation="1dp"
-            android:onClick="@{(view) -> model.onSendBtnClick()}"
+            android:onClick="@{() -> model.onSendBtnClick()}"
             app:layout_constraintBottom_toBottomOf="@+id/message"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/message" />
+            app:layout_constraintTop_toTopOf="@+id/message"
+            android:layout_marginRight="8dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

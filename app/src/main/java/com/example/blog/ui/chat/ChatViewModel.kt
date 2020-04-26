@@ -2,15 +2,10 @@
 
 package com.example.blog.ui.chat
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
-import android.os.Bundle
-import android.widget.EditText
-import android.widget.Toast
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.blog.R
@@ -36,50 +31,50 @@ class ChatViewModel : ViewModel() {
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val storage: FirebaseStorage = FirebaseStorage.getInstance()
 
+    val textField = mutableLiveData("")
+
     var blog: Blog = Blog()
 
-    val messageCommand = SingleLiveEvent<Void>()
-    val timeCommand = SingleLiveEvent<Void>()
     val imageCommand = SingleLiveEvent<Void>()
 
     fun setUp(){
-        items.value = Triple(messages as List<String>, images as List<Bitmap?>, time as List<String>)
+        items.value = Triple(messages as List<String>, images as List<Bitmap?>, times as List<String>)
     }
 
-    var activity: Activity? = null
     var context: Context? = null
-    var bundle: Bundle? = null
 
     var messages: ArrayList<String> = arrayListOf()
-    var time: ArrayList<String> = arrayListOf()
-    var images: ArrayList<Bitmap?> = arrayListOf(null)
+    var times: ArrayList<String> = arrayListOf()
+    private var images: ArrayList<Bitmap?> = arrayListOf(null)
 
     private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
 
     var bitmapImage: Bitmap? = null
+    var defaultBitmap: Bitmap? = null
+
+    var params = Triple("", "", "")
 
 
-    fun getTime() {
+    private fun getTime() {
         val ref: DatabaseReference = database.getReference("Blogs")
         ref.child("${blog.title}/time")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    time.clear()
+                    times.clear()
                     for (chatSnapshot: DataSnapshot in dataSnapshot.children) {
                         val time: String? = chatSnapshot.getValue(String()::class.java)
-                        this@ChatViewModel.time.add(time!!)
+                        times.add(time!!)
                     }
                 }
                 override fun onCancelled(error: DatabaseError) {
                 }
             })
-        timeCommand.call()
     }
 
     fun getMessages() {
-        blog.title = bundle!!.getString("title", "")
-        blog.blogId = bundle!!.getString("blogId", "")
-        blog.ownerId = bundle!!.getString("ownerId", "")
+        blog.title = params.first
+        blog.blogId = params.second
+        blog.ownerId = params.third
 
         val ref: DatabaseReference = database.getReference("Blogs")
         ref.child("${blog.title}/messages")
@@ -90,20 +85,19 @@ class ChatViewModel : ViewModel() {
                         val message: String? = chatSnapshot.getValue(String()::class.java)
                         messages.add(message!!)
                     }
+
+                    getTime()
+                    getImages()
                 }
                 override fun onCancelled(error: DatabaseError) {
                 }
             })
-        messageCommand.call()
     }
 
-    fun getImages(){
-        images = arrayListOf()
-        for (i in 0..messages.size){
-            images.add(null)
-        }
+    private fun getImages(){
+        images.clear()
 
-        for (i in 0..messages.size) {
+        for (i in 0 until messages.size) {
             val imageRef = storage.reference
                 .child("Blogs")
                 .child(blog.title)
@@ -111,56 +105,58 @@ class ChatViewModel : ViewModel() {
 
             imageRef.getBytes(MAX_DOWNLOAD_SIZE_BYTES)
                 .addOnSuccessListener {
-                    images[i] = BitmapFactory.decodeByteArray(it, 0, it.size)
+                    images.add(BitmapFactory.decodeByteArray(it, 0, it.size))
+                    if (i == messages.size - 1) {
+                        imageCommand.call()
+                    }
                 }
         }
-        imageCommand.call()
+
     }
 
     fun onSendBtnClick(){
-        if (isNetworkConnected()) {
-            if (user!!.uid == blog.ownerId) {
+        //if (isNetworkConnected()) {
+            //if (user!!.uid == blog.ownerId) {
 
                 uploadMessage()
 
-            } else Toast.makeText(context, "You are not an admin of this blog", Toast.LENGTH_SHORT).show()
+            //} else Toast.makeText(context, "You are not an admin of this blog", Toast.LENGTH_SHORT).show()
 
-        } else displayNoConnection()
+        //} else displayNoConnection()
     }
 
     private fun uploadMessage() {
-        val textField = activity!!.findViewById<EditText>(R.id.message)
-        if (textField.text.length in 1..MAX_MESSAGE_LENGTH) {
+        if (textField.value!!.length in 1..MAX_MESSAGE_LENGTH) {
 
+            val date = Date()
+            val dateFormat = SimpleDateFormat("MM.dd hh:mm", Locale.getDefault())
+            messages.add(textField.value.toString())
+            
             val messageRef = database.getReference("Blogs")
             messageRef.child("${blog.title}/messages")
                 .setValue(messages)
                 .addOnCompleteListener{ task ->
                     if (task.isSuccessful) {
-                        messages.add(textField.text.toString())
-
-                        val date = Date()
-                        val dateFormat = SimpleDateFormat("MM.dd hh:mm", Locale.getDefault())
-                        time.add(dateFormat.format(date))
+                        times.add(dateFormat.format(date))
                         messageRef.child("${blog.title}/time")
-                            .setValue(time).addOnSuccessListener {
+                            .setValue(times).addOnSuccessListener {
                                 uploadPicture()
                             }
                     }
                 }
-            textField.setText("")
+            textField.value = ""
         }
     }
 
     private fun uploadPicture() {
         if (bitmapImage == null) {
-            bitmapImage = BitmapFactory.decodeResource(context!!.resources, R.mipmap.tiny)
+            bitmapImage = defaultBitmap
         }
 
         images.add(bitmapImage)
 
         val baos = ByteArrayOutputStream()
-        bitmapImage!!.compress(Bitmap.CompressFormat.PNG, 100, baos)
+        bitmapImage!!.compress(Bitmap.CompressFormat.PNG, 20, baos)
         val data = baos.toByteArray()
 
         FirebaseStorage
@@ -172,25 +168,19 @@ class ChatViewModel : ViewModel() {
                 bitmapImage = null
             }
             .addOnSuccessListener {
-                items.value =
-                    Triple(
-                        messages as List<String>,
-                        images as List<Bitmap?>,
-                        time as List<String>
-                    )
-                getImages()
+                setUp()
                 bitmapImage = null
             }
     }
 
 
-    private fun displayNoConnection(){
-        Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun isNetworkConnected(): Boolean {
-        val cm = context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
-        return activeNetwork?.isConnectedOrConnecting == true
-    }
+    //private fun displayNoConnection(){
+    //    Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show()
+    //}
+//
+    //private fun isNetworkConnected(): Boolean {
+    //    val cm = context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    //    val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+    //    return activeNetwork?.isConnectedOrConnecting == true
+    //}
 }

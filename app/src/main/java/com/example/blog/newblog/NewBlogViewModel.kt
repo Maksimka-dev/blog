@@ -39,10 +39,9 @@ class NewBlogViewModel : ViewModel() {
             validationErrorCommand.call()
             return
         }
+        visibility.value = View.VISIBLE
 
         createBlog()
-
-        visibility.value = View.INVISIBLE
     }
 
     fun handleCancel() {
@@ -50,7 +49,7 @@ class NewBlogViewModel : ViewModel() {
     }
 
 
-    fun createBlog() {
+    private fun createBlog() {
         blog.title = title.value.toString()
         blog.description = description.value.toString()
         blog.ownerId = mAuth.currentUser!!.uid
@@ -68,7 +67,7 @@ class NewBlogViewModel : ViewModel() {
                 if (task.isSuccessful) {
 
                     val baos = ByteArrayOutputStream()
-                    bitmapImage!!.compress(Bitmap.CompressFormat.PNG, 100, baos)
+                    bitmapImage!!.compress(Bitmap.CompressFormat.PNG, 20, baos)
                     val data = baos.toByteArray()
 
                     FirebaseStorage.getInstance()

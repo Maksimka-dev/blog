@@ -26,6 +26,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.chat.ChatActivity">
+
+        </activity>
+
         <activity android:name=".blog.BlogActivity">
 
         </activity>
@@ -35,10 +39,6 @@
         </activity>
 
         <activity android:name=".login.LogInActivity">
-
-        </activity>
-
-        <activity android:name=".newblog.NewBlogActivity">
 
         </activity>
 

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -13,12 +12,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.example.blog.R
 import com.example.blog.blog.Blog
-import com.example.blog.blog.BlogFragment
 import com.example.blog.databinding.FragmentHomeBinding
-import com.example.blog.ui.chat.ChatFragment
+import com.example.blog.ui.chat.ChatActivity
 import com.example.blog.util.BlogListAdapter
 import com.example.blog.util.OnItemClickListener
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class HomeFragment : Fragment(), OnItemClickListener {
@@ -76,10 +73,6 @@ class HomeFragment : Fragment(), OnItemClickListener {
         bundle.putString("ownerId", blog.ownerId)
         bundle.putStringArrayList("time", blog.time)
         bundle.putStringArrayList("messages", blog.messages)
-
-        val fragment = ChatFragment.newInstance()
-        fragment.arguments = bundle
-
 
     }
 }

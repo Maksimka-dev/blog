@@ -40,7 +40,7 @@ class BlogViewModel : ViewModel() {
     var blogArrayList: ArrayList<Blog> = arrayListOf()
 
     fun handleFindClick() {
-        //items.value = items.value!! + generateItems()
+        generateItems()
     }
 
     fun handleOpenCLick(currentBlog: Blog){
@@ -100,6 +100,7 @@ class BlogViewModel : ViewModel() {
     }
 
     fun handleSuccessfulCreate(){
+        isCreateDialogOpen.value = false
         generateItems()
     }
 
