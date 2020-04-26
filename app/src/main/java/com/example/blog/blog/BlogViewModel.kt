@@ -100,7 +100,7 @@ class BlogViewModel : ViewModel() {
     }
 
     fun handleSuccessfulCreate(){
-        //refresh
+        generateItems()
     }
 
     fun handleCreateButtonClick(){
