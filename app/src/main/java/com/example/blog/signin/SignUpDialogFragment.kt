@@ -8,11 +8,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
 import com.example.blog.R
-import com.example.blog.databinding.FragmentSigninDialogBinding
+import com.example.blog.databinding.FragmentSignupDialogBinding
 import com.example.blog.viewmodel.viewModel
 
-class SignInDialogFragment : DialogFragment() {
-    private val model by viewModel<SignInDialogViewModel>()
+class SignUpDialogFragment : DialogFragment() {
+    private val model by viewModel<SignUpDialogViewModel>()
 
     private lateinit var listener: Listener
 
@@ -41,9 +41,9 @@ class SignInDialogFragment : DialogFragment() {
     }
 
     private fun setupDialog(): AlertDialog {
-        val view = LayoutInflater.from(context).inflate(R.layout.fragment_signin_dialog, null, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.fragment_signup_dialog, null, false)
 
-        val binding = FragmentSigninDialogBinding.bind(view)
+        val binding = FragmentSignupDialogBinding.bind(view)
         binding.lifecycleOwner = this
         binding.model = model
 

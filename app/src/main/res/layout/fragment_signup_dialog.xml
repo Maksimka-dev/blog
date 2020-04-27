@@ -7,7 +7,7 @@
 
         <variable
             name="model"
-            type="com.example.blog.signin.SignInDialogViewModel" />
+            type="com.example.blog.signin.SignUpDialogViewModel" />
 
     </data>
 
@@ -22,7 +22,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:enabled="@{!model.isLoading}"
             android:hint="Email"
             android:inputType="textEmailAddress"
             android:text="@={model.email}"
@@ -34,7 +33,6 @@
             android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:enabled="@{!model.isLoading}"
             android:hint="Username"
             android:text="@={model.username}"
             app:layout_constraintTop_toBottomOf="@id/email" />
@@ -43,7 +41,6 @@
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:enabled="@{!model.isLoading}"
             android:hint="Password"
             android:inputType="textPassword"
             android:text="@={model.password}"
@@ -53,7 +50,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="@={model.remember}"
-            android:enabled="@{!model.isLoading}"
             android:text="Remember me"
             app:layout_constraintTop_toBottomOf="@+id/password"
             tools:ignore="MissingConstraints" />

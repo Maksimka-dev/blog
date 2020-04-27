@@ -4,16 +4,16 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.blog.R
-import com.example.blog.databinding.ActivitySigninBinding
+import com.example.blog.databinding.ActivitySignupBinding
 import com.example.blog.inflaters.contentView
 import com.example.blog.viewmodel.viewModel
 
-class SignInActivity : AppCompatActivity(), SignInDialogFragment.Listener  {
-    private val model by viewModel<SignInViewModel>()
-    private val binding by contentView<ActivitySigninBinding>(R.layout.activity_signin)
+class SignUpActivity : AppCompatActivity(), SignUpDialogFragment.Listener  {
+    private val model by viewModel<SignUpViewModel>()
+    private val binding by contentView<ActivitySignupBinding>(R.layout.activity_signup)
 
     private val loginDialogFragment
-        get() = supportFragmentManager.findFragmentByTag("SigninDialog") as? SignInDialogFragment
+        get() = supportFragmentManager.findFragmentByTag("SigninDialog") as? SignUpDialogFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +32,7 @@ class SignInActivity : AppCompatActivity(), SignInDialogFragment.Listener  {
 
     private fun openLoginDialog() {
         loginDialogFragment
-            ?: SignInDialogFragment().show(supportFragmentManager, "SigninDialog")
+            ?: SignUpDialogFragment().show(supportFragmentManager, "SigninDialog")
     }
 
     private fun closeLoginDialog() {

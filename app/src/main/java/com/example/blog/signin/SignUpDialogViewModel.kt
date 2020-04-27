@@ -1,5 +1,7 @@
 package com.example.blog.signin
 
+import android.view.View
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.blog.livedata.SingleLiveEvent
 import com.example.blog.livedata.mutableLiveData
@@ -8,14 +10,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 
-class SignInDialogViewModel : ViewModel() {
+class SignUpDialogViewModel : ViewModel() {
     val username = mutableLiveData("")
     val password = mutableLiveData("")
     val email = mutableLiveData("")
 
     val remember = mutableLiveData(true)
 
-    val isLoading = mutableLiveData(false)
+    val isLoading: MutableLiveData<Int> = mutableLiveData(View.INVISIBLE)
 
     val validationErrorCommand = SingleLiveEvent<Void>()
 
@@ -30,7 +32,7 @@ class SignInDialogViewModel : ViewModel() {
             return
         }
 
-        isLoading.value = true
+        isLoading.value = View.VISIBLE
 
         signUp()
 
@@ -55,7 +57,7 @@ class SignInDialogViewModel : ViewModel() {
                         .setValue(user)
                         .addOnCompleteListener{ databaseTask ->
                             if (databaseTask.isSuccessful){
-                                isLoading.value = false
+                                isLoading.value = View.INVISIBLE
                                 loggedInCommand.call()
                             }
                         }

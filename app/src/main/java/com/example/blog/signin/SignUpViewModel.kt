@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.example.blog.livedata.mutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 
-class SignInViewModel : ViewModel() {
+class SignUpViewModel : ViewModel() {
     val isLoginDialogOpen = mutableLiveData(false)
 
     val email = mutableLiveData<String>(FirebaseAuth.getInstance().currentUser?.email)
