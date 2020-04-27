@@ -36,7 +36,7 @@ class ChatListAdapter(
 
         holder.binding.messageText.text = message
         holder.binding.timeTV.text = time
-        if (bitmap != null) holder.binding.messagePic.setImageBitmap(bitmap)
+        holder.binding.messagePic.setImageBitmap(bitmap)
     }
 
     fun setData(blogData: AdapterMessageData, bitmapData: AdapterBitmapData, timeData: AdapterTimeData) {

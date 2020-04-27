@@ -2,12 +2,21 @@
 
 package com.example.blog.ui.chat
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
+import android.provider.MediaStore
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.blog.R
@@ -22,6 +31,7 @@ class ChatActivity : AppCompatActivity(){
     private val model by viewModel<ChatViewModel>()
     private val binding by contentView<ActivityChatBinding>(R.layout.activity_chat)
 
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -47,44 +57,56 @@ class ChatActivity : AppCompatActivity(){
             adapter.setData(it.first, it.second, it.third)
         })
 
+        model.internetCommand.observe(this){
+            val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+            model.isInternetAvailable =  activeNetwork?.isConnectedOrConnecting == true
+        }
+
+        model.displayInternetCommand.observe(this){
+            Toast.makeText(this, "No internet connection available", Toast.LENGTH_SHORT).show()
+        }
+
+        model.displayAdminCommand.observe(this){
+            Toast.makeText(this, "No internet connection available", Toast.LENGTH_SHORT).show()
+        }
+
         model.defaultBitmap = BitmapFactory.decodeResource(this.resources, R.mipmap.tiny)
+
+        binding.clipBtn.setOnClickListener {
+            if(ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            {
+                requestPermissions(
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    2000)
+            }
+            else {
+                startGallery()
+            }
+        }
+
+        binding.recyclerView.scrollToPosition(model.messages.size - 1)
     }
 
-    //достаем картинку из галереи
-    //val clipBtn: Button = activity!!.findViewById(R.id.clipBtn)
-    //clipBtn.setOnClickListener {
-    //    if(ActivityCompat.checkSelfPermission(activity!!,
-    //            Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-    //    {
-    //        requestPermissions(
-    //            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-    //            2000)
-    //    }
-    //    else {
-    //        startGallery()
-    //    }
-    //}
+    private fun startGallery() {
+        val cameraIntent =
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        cameraIntent.type = "image/*"
+        if (cameraIntent.resolveActivity(this.packageManager) != null) {
+            startActivityForResult(cameraIntent, 1000)
+        }
+    }
 
-    //recyclerView.scrollToPosition(model.lastPos)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 1000) {
+                val returnUri: Uri? = data!!.data
+                val bitmapImage = MediaStore.Images.Media.getBitmap(this.contentResolver, returnUri)
+
+                model.bitmapImage = bitmapImage
+            }
+        }
+    }
 }
-
-//private fun startGallery() {
-//    val cameraIntent =
-//        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-//    cameraIntent.type = "image/*"
-//    if (cameraIntent.resolveActivity(activity!!.packageManager) != null) {
-//        startActivityForResult(cameraIntent, 1000)
-//    }
-//}
-//
-//override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent)
-//{
-//    if (resultCode == RESULT_OK) {
-//        if (requestCode == 1000) {
-//            val returnUri: Uri? = data.data
-//            val bitmapImage = MediaStore.Images.Media.getBitmap(activity!!.contentResolver, returnUri)
-//
-//            model.bitmapImage = bitmapImage
-//        }
-//    }
-//}

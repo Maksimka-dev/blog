@@ -2,20 +2,17 @@
 
 package com.example.blog.ui.chat
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.blog.R
 import com.example.blog.blog.Blog
 import com.example.blog.livedata.SingleLiveEvent
 import com.example.blog.livedata.mutableLiveData
 import com.example.blog.view.MAX_DOWNLOAD_SIZE_BYTES
 import com.example.blog.view.MAX_MESSAGE_LENGTH
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
@@ -37,17 +34,21 @@ class ChatViewModel : ViewModel() {
 
     val imageCommand = SingleLiveEvent<Void>()
 
+    val internetCommand = SingleLiveEvent<Void>()
+    var isInternetAvailable = false
+
+    val displayInternetCommand = SingleLiveEvent<Void>()
+    val displayAdminCommand = SingleLiveEvent<Void>()
+
     fun setUp(){
         items.value = Triple(messages as List<String>, images as List<Bitmap?>, times as List<String>)
     }
 
-    var context: Context? = null
+    private val user = FirebaseAuth.getInstance().currentUser
 
     var messages: ArrayList<String> = arrayListOf()
     var times: ArrayList<String> = arrayListOf()
-    private var images: ArrayList<Bitmap?> = arrayListOf(null)
-
-    private var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
+    private var images: ArrayList<Bitmap?> = arrayListOf()
 
     var bitmapImage: Bitmap? = null
     var defaultBitmap: Bitmap? = null
@@ -97,6 +98,10 @@ class ChatViewModel : ViewModel() {
     private fun getImages(){
         images.clear()
 
+        for (i in 0 until messages.size){
+            images.add(null)
+        }
+
         for (i in 0 until messages.size) {
             val imageRef = storage.reference
                 .child("Blogs")
@@ -105,8 +110,9 @@ class ChatViewModel : ViewModel() {
 
             imageRef.getBytes(MAX_DOWNLOAD_SIZE_BYTES)
                 .addOnSuccessListener {
-                    images.add(BitmapFactory.decodeByteArray(it, 0, it.size))
-                    if (i == messages.size - 1) {
+                    images[i] = BitmapFactory.decodeByteArray(it, 0, it.size)
+                    //images.add(BitmapFactory.decodeByteArray(it, 0, it.size))
+                    if (!images.contains(null)) {
                         imageCommand.call()
                     }
                 }
@@ -115,46 +121,41 @@ class ChatViewModel : ViewModel() {
     }
 
     fun onSendBtnClick(){
-        //if (isNetworkConnected()) {
-            //if (user!!.uid == blog.ownerId) {
+        if (isNetworkConnected()) {
+            if (user!!.uid == blog.ownerId) {
+
+                val date = Date()
+                val dateFormat = SimpleDateFormat("MM.dd hh:mm", Locale.getDefault())
+                if (bitmapImage == null) {
+                    bitmapImage = defaultBitmap
+                }
+
+                images.add(bitmapImage!!)
+                times.add(dateFormat.format(date))
+                messages.add(textField.value.toString())
+
+                imageCommand.call()
 
                 uploadMessage()
+                uploadPicture()
 
-            //} else Toast.makeText(context, "You are not an admin of this blog", Toast.LENGTH_SHORT).show()
-
-        //} else displayNoConnection()
+            } else displayNotAdmin()
+        } else displayNoConnection()
     }
 
     private fun uploadMessage() {
-        if (textField.value!!.length in 1..MAX_MESSAGE_LENGTH) {
-
-            val date = Date()
-            val dateFormat = SimpleDateFormat("MM.dd hh:mm", Locale.getDefault())
-            messages.add(textField.value.toString())
-            
+        if (textField.value!!.length in 0..MAX_MESSAGE_LENGTH) {
             val messageRef = database.getReference("Blogs")
             messageRef.child("${blog.title}/messages")
                 .setValue(messages)
-                .addOnCompleteListener{ task ->
-                    if (task.isSuccessful) {
-                        times.add(dateFormat.format(date))
-                        messageRef.child("${blog.title}/time")
-                            .setValue(times).addOnSuccessListener {
-                                uploadPicture()
-                            }
-                    }
-                }
+
+            messageRef.child("${blog.title}/time")
+                .setValue(times)
             textField.value = ""
         }
     }
 
     private fun uploadPicture() {
-        if (bitmapImage == null) {
-            bitmapImage = defaultBitmap
-        }
-
-        images.add(bitmapImage)
-
         val baos = ByteArrayOutputStream()
         bitmapImage!!.compress(Bitmap.CompressFormat.PNG, 20, baos)
         val data = baos.toByteArray()
@@ -164,23 +165,20 @@ class ChatViewModel : ViewModel() {
             .getReference("Blogs")
             .child("${blog.title}/${messages.size - 1}.png")
             .putBytes(data)
-            .addOnFailureListener {
-                bitmapImage = null
-            }
-            .addOnSuccessListener {
-                setUp()
-                bitmapImage = null
-            }
+
+        bitmapImage = null
     }
 
+    private fun displayNotAdmin(){
+        displayAdminCommand.call()
+    }
 
-    //private fun displayNoConnection(){
-    //    Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show()
-    //}
-//
-    //private fun isNetworkConnected(): Boolean {
-    //    val cm = context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    //    val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
-    //    return activeNetwork?.isConnectedOrConnecting == true
-    //}
+    private fun displayNoConnection(){
+        displayInternetCommand.call()
+    }
+
+    private fun isNetworkConnected(): Boolean {
+        internetCommand.call()
+        return isInternetAvailable
+    }
 }

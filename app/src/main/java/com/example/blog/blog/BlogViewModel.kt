@@ -39,10 +39,6 @@ class BlogViewModel : ViewModel() {
     var avatarList: ArrayList<Bitmap?> = arrayListOf()
     var blogArrayList: ArrayList<Blog> = arrayListOf()
 
-    fun handleFindClick() {
-        generateItems()
-    }
-
     fun handleOpenCLick(currentBlog: Blog){
         blog = currentBlog
         openCommand.call()
