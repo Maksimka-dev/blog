@@ -61,20 +61,6 @@ class BlogViewModel : ViewModel() {
 
             if (firebaseUser != null) {
                 getUser(firebaseUser)
-
-                if (blogSnap == null) {
-                    databaseRef.addValueEventListener(object : ValueEventListener {
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            blogSnap = dataSnapshot
-                            getBlogs()
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-                        }
-                    })
-                } else {
-                    getBlogs()
-                }
             }
         } else displayNoConnection()
     }
@@ -82,6 +68,11 @@ class BlogViewModel : ViewModel() {
     private fun getBlogs() {
         blogArrayList.clear()
         avatarList.clear()
+
+        items.value = Pair(
+            blogArrayList as List<Blog>,
+            avatarList as List<Bitmap?>
+        )
 
         for (blogSnapshot in blogSnap!!.children) {
             val blog = blogSnapshot.getValue(Blog::class.java)
@@ -115,12 +106,29 @@ class BlogViewModel : ViewModel() {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     userSnap = dataSnapshot
                     user = userSnap!!.getValue(User::class.java)
+                    onBlogSnap()
+                }
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
+        } else {
+            user = userSnap!!.getValue(User::class.java)
+            onBlogSnap()
+        }
+    }
+
+    private fun onBlogSnap() {
+        if (blogSnap == null) {
+            databaseRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    blogSnap = dataSnapshot
+                    getBlogs()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                 }
             })
-        } else user = userSnap!!.getValue(User::class.java)
+        } else getBlogs()
     }
 
     fun handleOpenCLick(currentBlog: Blog){
