@@ -2,6 +2,8 @@ package com.example.blog.findblog
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.blog.R
 import com.example.blog.databinding.ActivityFindblogBinding
 import com.example.blog.inflaters.contentView
@@ -15,5 +17,23 @@ class FindBlogActivity : AppCompatActivity()  {
         super.onCreate(savedInstanceState)
 
         binding.model = model
+
+        val adapter = FindBlogListAdapter(model)
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = adapter
+
+        model.searchCommand.observe(this){
+            model.generateItems()
+        }
+
+        model.items.observe(this, Observer {
+            adapter.setData(it.first, it.second)
+            adapter.notifyDataSetChanged()
+        })
+
+        model.subCommand.observe(this){
+            model.subscribe()
+        }
     }
 }
