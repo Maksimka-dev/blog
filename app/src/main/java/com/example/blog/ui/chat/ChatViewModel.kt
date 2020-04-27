@@ -4,7 +4,6 @@ package com.example.blog.ui.chat
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.blog.blog.Blog
@@ -55,21 +54,36 @@ class ChatViewModel : ViewModel() {
 
     var params = Triple("", "", "")
 
+    private val databaseReference: DatabaseReference = database.getReference("Blogs")
+
+    var messagesSnap: DataSnapshot? = null
+    var timeSnap: DataSnapshot? = null
+
 
     private fun getTime() {
-        val ref: DatabaseReference = database.getReference("Blogs")
-        ref.child("${blog.title}/time")
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    times.clear()
-                    for (chatSnapshot: DataSnapshot in dataSnapshot.children) {
-                        val time: String? = chatSnapshot.getValue(String()::class.java)
-                        times.add(time!!)
+        if (timeSnap == null) {
+            databaseReference.child("${blog.title}/time")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        timeSnap = dataSnapshot
+                        times.clear()
+
+                        for (chatSnapshot: DataSnapshot in timeSnap!!.children) {
+                            val time: String? = chatSnapshot.getValue(String()::class.java)
+                            times.add(time!!)
+                        }
                     }
-                }
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+                })
+        } else {
+            times.clear()
+            for (chatSnapshot: DataSnapshot in timeSnap!!.children) {
+                val time: String? = chatSnapshot.getValue(String()::class.java)
+                times.add(time!!)
+            }
+        }
     }
 
     fun getMessages() {
@@ -77,22 +91,32 @@ class ChatViewModel : ViewModel() {
         blog.blogId = params.second
         blog.ownerId = params.third
 
-        val ref: DatabaseReference = database.getReference("Blogs")
-        ref.child("${blog.title}/messages")
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    messages.clear()
-                    for (chatSnapshot: DataSnapshot in dataSnapshot.children) {
-                        val message: String? = chatSnapshot.getValue(String()::class.java)
-                        messages.add(message!!)
+        if (messagesSnap == null) {
+            databaseReference.child("${blog.title}/messages")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        messagesSnap = dataSnapshot
+                        messages.clear()
+                        for (chatSnapshot: DataSnapshot in messagesSnap!!.children) {
+                            val message: String? = chatSnapshot.getValue(String()::class.java)
+                            messages.add(message!!)
+                        }
+                        getTime()
+                        getImages()
                     }
 
-                    getTime()
-                    getImages()
-                }
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+                })
+        } else {
+            messages.clear()
+            for (chatSnapshot: DataSnapshot in messagesSnap!!.children) {
+                val message: String? = chatSnapshot.getValue(String()::class.java)
+                messages.add(message!!)
+            }
+            getTime()
+            getImages()
+        }
     }
 
     private fun getImages(){
@@ -145,11 +169,10 @@ class ChatViewModel : ViewModel() {
 
     private fun uploadMessage() {
         if (textField.value!!.length in 0..MAX_MESSAGE_LENGTH) {
-            val messageRef = database.getReference("Blogs")
-            messageRef.child("${blog.title}/messages")
+            databaseReference.child("${blog.title}/messages")
                 .setValue(messages)
 
-            messageRef.child("${blog.title}/time")
+            databaseReference.child("${blog.title}/time")
                 .setValue(times)
             textField.value = ""
         }

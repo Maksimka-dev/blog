@@ -55,6 +55,7 @@ class ChatActivity : AppCompatActivity(){
 
         model.items.observe(this, Observer {
             adapter.setData(it.first, it.second, it.third)
+            adapter.notifyDataSetChanged()
         })
 
         model.internetCommand.observe(this){
@@ -68,7 +69,7 @@ class ChatActivity : AppCompatActivity(){
         }
 
         model.displayAdminCommand.observe(this){
-            Toast.makeText(this, "No internet connection available", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "You are not an admin of this blog", Toast.LENGTH_SHORT).show()
         }
 
         model.defaultBitmap = BitmapFactory.decodeResource(this.resources, R.mipmap.tiny)
