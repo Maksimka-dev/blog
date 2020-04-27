@@ -1,8 +1,13 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.blog.blog
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +25,10 @@ class BlogActivity : AppCompatActivity(), NewBlogDialogFragment.Listener{
     private val newBlogDialog
         get() = supportFragmentManager.findFragmentByTag("createDialog") as? NewBlogDialogFragment
 
+    override fun onResume() {
+        super.onResume()
+        model.generateItems()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +36,6 @@ class BlogActivity : AppCompatActivity(), NewBlogDialogFragment.Listener{
         binding.model = model
 
         val adapter = BlogListAdapter(model)
-
-        model.generateItems()
 
         model.openCommand.observe(this){
             onOpen(model.blog)
@@ -39,6 +46,7 @@ class BlogActivity : AppCompatActivity(), NewBlogDialogFragment.Listener{
 
         model.items.observe(this, Observer {
             adapter.setData(it.first, it.second)
+            adapter.notifyDataSetChanged()
         })
 
         model.isCreateDialogOpen.observe(this, Observer {
@@ -49,6 +57,16 @@ class BlogActivity : AppCompatActivity(), NewBlogDialogFragment.Listener{
                 closeCreateDialog()
             }
         })
+
+        model.internetCommand.observe(this){
+            val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+            model.isInternetAvailable =  activeNetwork?.isConnectedOrConnecting == true
+        }
+
+        model.displayInternetCommand.observe(this){
+            Toast.makeText(this, "No internet connection available", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun openCreateDialog(){

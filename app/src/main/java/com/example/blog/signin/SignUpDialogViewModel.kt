@@ -46,7 +46,6 @@ class SignUpDialogViewModel : ViewModel() {
         mAuth.createUserWithEmailAndPassword(email.value.toString(), password.value.toString())
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
                     val user = User()
                     user.email = email.value.toString()
                     user.name = username.value.toString()
@@ -62,7 +61,6 @@ class SignUpDialogViewModel : ViewModel() {
                             }
                         }
                 } else {
-                    // If sign in fails, display a message to the user.
                     validationErrorCommand.call()
                 }
             }

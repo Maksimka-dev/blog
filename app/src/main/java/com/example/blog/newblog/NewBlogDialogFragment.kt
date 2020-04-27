@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.blog.newblog
 
 import android.Manifest
@@ -37,7 +39,7 @@ class NewBlogDialogFragment : DialogFragment() {
         val dialog = setupDialog()
 
         model.validationErrorCommand.observe(this) {
-            Toast.makeText(context, "Wrong credentials :(", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Title is too short", Toast.LENGTH_SHORT).show()
         }
 
         model.createCommand.observe(this) {
@@ -46,6 +48,10 @@ class NewBlogDialogFragment : DialogFragment() {
 
         model.cancelledCommand.observe(this) {
             listener.onCancel()
+        }
+
+        model.avatarCommand.observe(this){
+            Toast.makeText(context, "Please select blog icon", Toast.LENGTH_SHORT).show()
         }
 
         return dialog

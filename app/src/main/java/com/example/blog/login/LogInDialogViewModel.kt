@@ -1,5 +1,7 @@
 package com.example.blog.login
 
+import android.view.View
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.blog.livedata.SingleLiveEvent
 import com.example.blog.livedata.mutableLiveData
@@ -11,7 +13,7 @@ class LogInDialogViewModel : ViewModel() {
 
     val remember = mutableLiveData(true)
 
-    val isLoading = mutableLiveData(false)
+    val isLoading: MutableLiveData<Int> = mutableLiveData(View.INVISIBLE)
 
     val validationErrorCommand = SingleLiveEvent<Void>()
 
@@ -26,9 +28,9 @@ class LogInDialogViewModel : ViewModel() {
             return
         }
 
-        logIn()
+        isLoading.value = View.VISIBLE
 
-        isLoading.value = true
+        logIn()
     }
 
     fun handleCancel() {
@@ -41,7 +43,7 @@ class LogInDialogViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     loggedInCommand.call()
-                    isLoading.value = false
+                    isLoading.value = View.INVISIBLE
                 } else {
                     validationErrorCommand.call()
                 }

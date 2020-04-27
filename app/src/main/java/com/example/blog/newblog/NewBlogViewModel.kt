@@ -25,6 +25,7 @@ class NewBlogViewModel : ViewModel() {
 
     val createCommand = SingleLiveEvent<Void>()
     val cancelledCommand = SingleLiveEvent<Void>()
+    val avatarCommand = SingleLiveEvent<Void>()
 
     var blog = Blog()
 
@@ -35,13 +36,15 @@ class NewBlogViewModel : ViewModel() {
     var bitmapImage: Bitmap? = null
 
     fun handleCreateButtonClick() {
-        if (title.value.isNullOrBlank()) {
-            validationErrorCommand.call()
-            return
-        }
-        visibility.value = View.VISIBLE
+        if (bitmapImage != null) {
+            if (title.value.isNullOrBlank()) {
+                validationErrorCommand.call()
+                return
+            }
+            visibility.value = View.VISIBLE
 
-        createBlog()
+            createBlog()
+        } else displayNoAvatar()
     }
 
     fun handleCancel() {
@@ -109,5 +112,9 @@ class NewBlogViewModel : ViewModel() {
             override fun onCancelled(error: DatabaseError) {
             }
         })
+    }
+
+    private fun displayNoAvatar(){
+        avatarCommand.call()
     }
 }

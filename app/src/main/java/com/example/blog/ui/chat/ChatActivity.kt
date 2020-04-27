@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.blog.R
 import com.example.blog.databinding.ActivityChatBinding
 import com.example.blog.inflaters.contentView
-import com.example.blog.util.ChatListAdapter
 import com.example.blog.viewmodel.viewModel
 
 
@@ -56,6 +55,7 @@ class ChatActivity : AppCompatActivity(){
         model.items.observe(this, Observer {
             adapter.setData(it.first, it.second, it.third)
             adapter.notifyDataSetChanged()
+            binding.recyclerView.scrollToPosition(model.messages.size - 1)
         })
 
         model.internetCommand.observe(this){
