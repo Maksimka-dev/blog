@@ -13,6 +13,12 @@ class LogInDialogViewModel : ViewModel() {
 
     val remember = mutableLiveData(true)
 
+    val internetCommand = SingleLiveEvent<Void>()
+    var isInternetAvailable = false
+
+    val displayInternetCommand =
+        SingleLiveEvent<Void>()
+
     val isLoading: MutableLiveData<Int> =
         mutableLiveData(View.INVISIBLE)
 
@@ -25,14 +31,16 @@ class LogInDialogViewModel : ViewModel() {
     private val mAuth = FirebaseAuth.getInstance()
 
     fun handleLoginButtonClick() {
-        if (email.value.isNullOrBlank() || password.value.isNullOrBlank()) {
-            validationErrorCommand.call()
-            return
-        }
+        if (isNetworkConnected()) {
+            if (email.value.isNullOrBlank() || password.value.isNullOrBlank()) {
+                validationErrorCommand.call()
+                return
+            }
 
-        isLoading.value = View.VISIBLE
+            isLoading.value = View.VISIBLE
 
-        logIn()
+            logIn()
+        } else displayNoConnection()
     }
 
     fun handleCancel() {
@@ -50,5 +58,14 @@ class LogInDialogViewModel : ViewModel() {
                     validationErrorCommand.call()
                 }
             }
+    }
+
+    private fun displayNoConnection(){
+        displayInternetCommand.call()
+    }
+
+    private fun isNetworkConnected(): Boolean {
+        internetCommand.call()
+        return isInternetAvailable
     }
 }

@@ -30,6 +30,12 @@ class NewBlogViewModel : ViewModel() {
     val cancelledCommand = SingleLiveEvent<Void>()
     val avatarCommand = SingleLiveEvent<Void>()
 
+    val internetCommand = SingleLiveEvent<Void>()
+    var isInternetAvailable = false
+
+    val displayInternetCommand =
+        SingleLiveEvent<Void>()
+
     var blog = Blog()
 
     val visibility: MutableLiveData<Int> =
@@ -40,15 +46,17 @@ class NewBlogViewModel : ViewModel() {
     var bitmapImage: Bitmap? = null
 
     fun handleCreateButtonClick() {
-        if (bitmapImage != null) {
-            if (title.value.isNullOrBlank()) {
-                validationErrorCommand.call()
-                return
-            }
-            visibility.value = View.VISIBLE
+        if (isNetworkConnected()) {
+            if (bitmapImage != null) {
+                if (title.value.isNullOrBlank()) {
+                    validationErrorCommand.call()
+                    return
+                }
+                visibility.value = View.VISIBLE
 
-            createBlog()
-        } else displayNoAvatar()
+                createBlog()
+            } else displayNoAvatar()
+        } else displayNoConnection()
     }
 
     fun handleCancel() {
@@ -120,5 +128,14 @@ class NewBlogViewModel : ViewModel() {
 
     private fun displayNoAvatar(){
         avatarCommand.call()
+    }
+
+    private fun displayNoConnection(){
+        displayInternetCommand.call()
+    }
+
+    private fun isNetworkConnected(): Boolean {
+        internetCommand.call()
+        return isInternetAvailable
     }
 }

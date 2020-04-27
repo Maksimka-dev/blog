@@ -1,8 +1,12 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.blog.ui.login
 
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -37,6 +41,16 @@ class LogInDialogFragment : DialogFragment() {
 
         model.cancelledCommand.observe(this) {
             listener.onCancel()
+        }
+
+        model.internetCommand.observe(this){
+            val cm = activity?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+            model.isInternetAvailable =  activeNetwork?.isConnectedOrConnecting == true
+        }
+
+        model.displayInternetCommand.observe(this){
+            Toast.makeText(activity, "No internet connection available", Toast.LENGTH_SHORT).show()
         }
 
         return dialog

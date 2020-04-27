@@ -9,6 +9,8 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -52,6 +54,16 @@ class NewBlogDialogFragment : DialogFragment() {
 
         model.avatarCommand.observe(this){
             Toast.makeText(context, "Please select blog icon", Toast.LENGTH_SHORT).show()
+        }
+
+        model.internetCommand.observe(this){
+            val cm = activity?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+            model.isInternetAvailable =  activeNetwork?.isConnectedOrConnecting == true
+        }
+
+        model.displayInternetCommand.observe(this){
+            Toast.makeText(activity, "No internet connection available", Toast.LENGTH_SHORT).show()
         }
 
         return dialog

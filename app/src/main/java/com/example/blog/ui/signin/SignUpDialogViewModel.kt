@@ -26,18 +26,25 @@ class SignUpDialogViewModel : ViewModel() {
     val loggedInCommand = SingleLiveEvent<Void>()
     val cancelledCommand = SingleLiveEvent<Void>()
 
+    val internetCommand = SingleLiveEvent<Void>()
+    var isInternetAvailable = false
+
+    val displayInternetCommand =
+        SingleLiveEvent<Void>()
+
     private val mAuth = FirebaseAuth.getInstance()
 
     fun handleLoginButtonClick() {
-        if (username.value.isNullOrBlank() || password.value.isNullOrBlank() || email.value.isNullOrBlank()) {
-            validationErrorCommand.call()
-            return
-        }
+        if (isNetworkConnected()) {
+            if (username.value.isNullOrBlank() || password.value.isNullOrBlank() || email.value.isNullOrBlank()) {
+                validationErrorCommand.call()
+                return
+            }
 
-        isLoading.value = View.VISIBLE
+            isLoading.value = View.VISIBLE
 
-        signUp()
-
+            signUp()
+        } else displayNoConnection()
     }
 
     fun handleCancel() {
@@ -66,5 +73,14 @@ class SignUpDialogViewModel : ViewModel() {
                     validationErrorCommand.call()
                 }
             }
+    }
+
+    private fun displayNoConnection(){
+        displayInternetCommand.call()
+    }
+
+    private fun isNetworkConnected(): Boolean {
+        internetCommand.call()
+        return isInternetAvailable
     }
 }
