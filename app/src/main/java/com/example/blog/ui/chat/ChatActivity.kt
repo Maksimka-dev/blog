@@ -21,14 +21,16 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.blog.R
 import com.example.blog.databinding.ActivityChatBinding
-import com.example.blog.inflaters.contentView
-import com.example.blog.viewmodel.viewModel
+import com.example.blog.util.inflaters.contentView
+import com.example.blog.util.viewmodel.viewModel
 
 
 class ChatActivity : AppCompatActivity(){
 
     private val model by viewModel<ChatViewModel>()
-    private val binding by contentView<ActivityChatBinding>(R.layout.activity_chat)
+    private val binding by contentView<ActivityChatBinding>(
+        R.layout.activity_chat
+    )
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -5,13 +5,14 @@
     <data>
         <variable
             name="model"
-            type="com.example.blog.findblog.FindBlogViewModel" />
+            type="com.example.blog.ui.findblog.FindBlogViewModel" />
     </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimaryDark">
+        android:background="@color/colorAccent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -27,6 +28,7 @@
         <ProgressBar
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:background="@drawable/progress"
             android:visibility="@{model.progressVisibility}"
             app:layout_constraintBottom_toBottomOf="@+id/recyclerView"
             app:layout_constraintEnd_toEndOf="parent"
@@ -40,7 +42,9 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:clickable="true"
+            android:focusable="true"
             android:onClick="@{() -> model.handleSearchClick()}"
+            app:backgroundTint="@color/colorWhite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/search" />
@@ -51,9 +55,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:autofillHints=""
             android:ems="10"
+            android:hint="@string/Search"
             android:inputType="textPersonName"
             android:text="@={model.search}"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorWhite"
             app:layout_constraintBottom_toBottomOf="@+id/fab"
             app:layout_constraintEnd_toStartOf="@+id/fab"
             app:layout_constraintStart_toStartOf="parent"
@@ -65,10 +73,10 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:background="@android:color/transparent"
-            android:text="Subscribe"
-            android:visibility="@{model.subscribeVisibility}"
             android:onClick="@{() -> model.handleSubClick()}"
+            android:text="@string/subscribe"
             android:textColor="@color/colorWhite"
+            android:visibility="@{model.subscribeVisibility}"
             app:layout_constraintBottom_toTopOf="@+id/search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

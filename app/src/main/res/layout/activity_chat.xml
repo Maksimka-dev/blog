@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimaryDark">
+        android:background="@color/colorAccent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -22,19 +22,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/message"/>
+            tools:listitem="@layout/message" />
 
         <Button
             android:id="@+id/clipBtn"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:background="@drawable/attach"
             android:elevation="1dp"
             app:layout_constraintBottom_toBottomOf="@+id/message"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/message"
-            android:layout_marginLeft="8dp" />
+            app:layout_constraintTop_toTopOf="@+id/message" />
 
         <EditText
             android:id="@+id/message"
@@ -44,11 +44,12 @@
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="16dp"
             android:ems="10"
-            android:text="@={model.textField}"
             android:gravity="start|top"
             android:hint="@string/type"
             android:inputType="textMultiLine"
+            android:text="@={model.textField}"
             android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorWhite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/sendBtn"
             app:layout_constraintStart_toEndOf="@+id/clipBtn"
@@ -60,12 +61,12 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:background="@drawable/send"
             android:onClick="@{() -> model.onSendBtnClick()}"
             app:layout_constraintBottom_toBottomOf="@+id/message"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/message"
-            android:layout_marginRight="8dp" />
+            app:layout_constraintTop_toTopOf="@+id/message" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

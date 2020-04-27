@@ -8,6 +8,6 @@
         android:bottom="1dp"
         android:right="1dp" />
     <solid
-        android:color="@color/colorAccent">
+        android:color="@color/colorWhite">
     </solid>
 </shape>

@@ -7,13 +7,14 @@
 
         <variable
             name="model"
-            type="com.example.blog.signin.SignUpDialogViewModel" />
+            type="com.example.blog.ui.signin.SignUpDialogViewModel" />
 
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorWhite"
         android:orientation="vertical"
         android:padding="16dp">
 

@@ -6,9 +6,10 @@
     <color name="colorAccent">#5ea3dc</color>
     <color name="colorAccentLight">#99d1ff</color>
     <color name="colorMenuPrimary">#233040</color>
-    <color name="colorNavBar">#161d27</color>
+    <color name="colorNavBar">#FFFFFF</color>
     <color name="colorWhite">#ffffff</color>
     <color name="colorStatusBar">#1a242e</color>
+    <color name="colorBlack">#000000</color>
 
     <color name="colorPink">#e15861</color>
     <color name="colorPurple">#b72377</color>

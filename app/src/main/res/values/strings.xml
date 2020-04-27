@@ -28,5 +28,14 @@
     <string name="description">Description</string>
     <string name="descHint">Here you can add an additional description for your blog</string>
 
+    <string name="Home">Home</string>
+    <string name="FindBlogs">Find Blogs</string>
+
+    <string name="Search">Search for blogs</string>
+
+    <string name="Logout">Logout</string>
+    <string name="Login">Log In</string>
+
     <string name="type">Type</string>
+    <string name="subscribe">Subscribe</string>
 </resources>

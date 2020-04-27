@@ -6,11 +6,11 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.blog.blog.Blog
-import com.example.blog.livedata.SingleLiveEvent
-import com.example.blog.livedata.mutableLiveData
-import com.example.blog.view.MAX_DOWNLOAD_SIZE_BYTES
-import com.example.blog.view.MAX_MESSAGE_LENGTH
+import com.example.blog.ui.blog.Blog
+import com.example.blog.util.livedata.SingleLiveEvent
+import com.example.blog.util.livedata.mutableLiveData
+import com.example.blog.util.view.MAX_DOWNLOAD_SIZE_BYTES
+import com.example.blog.util.view.MAX_MESSAGE_LENGTH
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -22,22 +22,26 @@ import kotlin.collections.ArrayList
 
 class ChatViewModel : ViewModel() {
 
-    val items: MutableLiveData<Triple<List<String>, List<Bitmap?>, List<String>>> = mutableLiveData()
+    val items: MutableLiveData<Triple<List<String>, List<Bitmap?>, List<String>>> =
+        mutableLiveData()
 
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val storage: FirebaseStorage = FirebaseStorage.getInstance()
 
     val textField = mutableLiveData("")
 
-    var blog: Blog = Blog()
+    var blog: Blog =
+        Blog()
 
     val imageCommand = SingleLiveEvent<Void>()
 
     val internetCommand = SingleLiveEvent<Void>()
     var isInternetAvailable = false
 
-    val displayInternetCommand = SingleLiveEvent<Void>()
-    val displayAdminCommand = SingleLiveEvent<Void>()
+    val displayInternetCommand =
+        SingleLiveEvent<Void>()
+    val displayAdminCommand =
+        SingleLiveEvent<Void>()
 
     fun setUp(){
         items.value = Triple(messages as List<String>, images as List<Bitmap?>, times as List<String>)

@@ -1,24 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".architecture.feat.main.MainActivity"
     tools:ignore="HardcodedText">
 
-    <LinearLayout
-        android:id="@+id/parts"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:background="@color/colorAccent">
 
         <Button
-            android:layout_width="match_parent"
+            android:id="@+id/findButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1. Example" />
+            android:layout_marginTop="16dp"
+            android:background="@drawable/round_shape"
+            android:elevation="1dp"
+            android:fontFamily="@font/roboto_slab"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/FindBlogs"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/loginButton"
+            app:layout_constraintEnd_toEndOf="@+id/homeButton"
+            app:layout_constraintStart_toStartOf="@+id/homeButton"
+            app:layout_constraintTop_toBottomOf="@+id/homeButton" />
 
         <Button
-            android:layout_width="match_parent"
+            android:id="@+id/signupButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2. Example" />
+            android:layout_marginTop="16dp"
+            android:background="@drawable/round_shape"
+            android:elevation="1dp"
+            android:fontFamily="@font/roboto_slab"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/sign_up"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/loginButton"
+            app:layout_constraintStart_toStartOf="@+id/loginButton"
+            app:layout_constraintTop_toBottomOf="@+id/loginButton" />
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/homeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="64dp"
+            android:background="@drawable/round_shape"
+            android:elevation="1dp"
+            android:fontFamily="@font/roboto_slab"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/Home"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/findButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/blog" />
+
+        <Button
+            android:id="@+id/loginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/round_shape"
+            android:elevation="1dp"
+            android:fontFamily="@font/roboto_slab"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/sign_in"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/signupButton"
+            app:layout_constraintEnd_toEndOf="@+id/findButton"
+            app:layout_constraintStart_toStartOf="@+id/findButton"
+            app:layout_constraintTop_toBottomOf="@+id/findButton" />
+
+        <TextView
+            android:id="@+id/blog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="150dp"
+            android:fontFamily="@font/roboto_slab_bold"
+            android:text="Blog"
+            android:textColor="@color/colorWhite"
+            android:textSize="72sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
