@@ -1,7 +1,6 @@
 package com.example.blog.ui.login
 
 import androidx.lifecycle.ViewModel
-import com.example.blog.util.livedata.SingleLiveEvent
 import com.example.blog.util.livedata.mutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 
@@ -26,7 +25,7 @@ class LogInViewModel : ViewModel() {
         isLoginDialogOpen.value = false
     }
 
-    fun handleLogoutClick(){
+    fun handleLogoutClick() {
         mAuth.signOut()
         email.value = "Anonymous"
     }

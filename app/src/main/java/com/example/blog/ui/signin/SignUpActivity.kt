@@ -14,9 +14,12 @@ class SignUpActivity : AppCompatActivity(),
     private val binding by contentView<ActivitySignupBinding>(
         R.layout.activity_signup
     )
-
     private val loginDialogFragment
-        get() = supportFragmentManager.findFragmentByTag("SigninDialog") as? SignUpDialogFragment
+        get() = supportFragmentManager.findFragmentByTag(DIALOG) as? SignUpDialogFragment
+
+    companion object {
+        const val DIALOG = "SigninDialog"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,8 +29,7 @@ class SignUpActivity : AppCompatActivity(),
         model.isLoginDialogOpen.observe(this, Observer {
             if (it == true) {
                 openLoginDialog()
-            }
-            else {
+            } else {
                 closeLoginDialog()
             }
         })
@@ -36,7 +38,7 @@ class SignUpActivity : AppCompatActivity(),
     private fun openLoginDialog() {
         loginDialogFragment
             ?: SignUpDialogFragment()
-                .show(supportFragmentManager, "SigninDialog")
+                .show(supportFragmentManager, DIALOG)
     }
 
     private fun closeLoginDialog() {

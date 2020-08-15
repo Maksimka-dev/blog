@@ -1,23 +1,22 @@
-package com.example.blog.ui.findblog
+package com.example.blog.util.adapters
 
-import com.example.blog.ui.blog.Blog
-import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.blog.databinding.ChannelFindblogBinding
+import com.example.blog.model.Blog
+import com.example.blog.ui.findblog.FindBlogViewModel
 
 typealias AdapterBlogData = List<Blog>
-typealias AdapterBitmapData = List<Bitmap?>
 
-class FindBlogListAdapter   (
+class FindBlogListAdapter(
     private val model: FindBlogViewModel,
     private var data: Pair<AdapterBlogData, AdapterBitmapData> = Pair(emptyList(), emptyList())
 ) : RecyclerView.Adapter<FindBlogListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ChannelFindblogBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ChannelFindblogBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(
             binding
         )
@@ -28,14 +27,14 @@ class FindBlogListAdapter   (
         val avatar = data.second[position]
 
         val title = blog.title
-        var time: String = ""
-        var lastMsg: String = ""
+        var time = ""
+        var lastMsg = ""
 
         if (blog.time.isNotEmpty()) {
             time = blog.time.last().toString()
         }
 
-        if (blog.messages.isNotEmpty()){
+        if (blog.messages.isNotEmpty()) {
             lastMsg = blog.messages.last().toString()
         }
 
@@ -52,31 +51,9 @@ class FindBlogListAdapter   (
     override fun getItemCount() = data.first.size
 
     fun setData(blogData: AdapterBlogData, bitmapData: AdapterBitmapData) {
-        val diffResult = DiffUtil.calculateDiff(
-            DiffCallback(
-                data.first,
-                blogData
-            )
-        )
         data = Pair(blogData, bitmapData)
-        diffResult.dispatchUpdatesTo(this)
+        notifyDataSetChanged()
     }
 
     class ViewHolder(val binding: ChannelFindblogBinding) : RecyclerView.ViewHolder(binding.root)
-
-    class DiffCallback(
-        private val oldBlogData: AdapterBlogData,
-        private val newBlogData: AdapterBlogData
-    ) : DiffUtil.Callback() {
-
-        override fun getOldListSize() = oldBlogData.size
-
-        override fun getNewListSize() = newBlogData.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldBlogData[oldItemPosition] == newBlogData[newItemPosition]
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldBlogData[oldItemPosition] == newBlogData[newItemPosition]
-    }
 }

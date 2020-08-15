@@ -5,8 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.blog.R
 import com.example.blog.databinding.ActivityLoginBinding
-import com.example.blog.util.viewmodel.viewModel
 import com.example.blog.util.inflaters.contentView
+import com.example.blog.util.viewmodel.viewModel
 
 class LogInActivity : AppCompatActivity(),
     LogInDialogFragment.Listener {
@@ -14,9 +14,12 @@ class LogInActivity : AppCompatActivity(),
     private val binding by contentView<ActivityLoginBinding>(
         R.layout.activity_login
     )
-
     private val loginDialogFragment
-        get() = supportFragmentManager.findFragmentByTag("LoginDialog") as? LogInDialogFragment
+        get() = supportFragmentManager.findFragmentByTag(DIALOG) as? LogInDialogFragment
+
+    companion object {
+        const val DIALOG = "LoginDialog"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,8 +29,7 @@ class LogInActivity : AppCompatActivity(),
         model.isLoginDialogOpen.observe(this, Observer {
             if (it == true) {
                 openLoginDialog()
-            }
-            else {
+            } else {
                 closeLoginDialog()
             }
         })
@@ -36,7 +38,7 @@ class LogInActivity : AppCompatActivity(),
     private fun openLoginDialog() {
         loginDialogFragment
             ?: LogInDialogFragment()
-                .show(supportFragmentManager, "LoginDialog")
+                .show(supportFragmentManager, DIALOG)
     }
 
     private fun closeLoginDialog() {

@@ -4,10 +4,10 @@ import android.graphics.Bitmap
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.blog.ui.blog.Blog
+import com.example.blog.model.Blog
 import com.example.blog.util.livedata.SingleLiveEvent
 import com.example.blog.util.livedata.mutableLiveData
-import com.example.blog.util.user.User
+import com.example.blog.model.User
 import com.example.blog.util.view.ID_LENGTH
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -62,7 +62,6 @@ class NewBlogViewModel : ViewModel() {
     fun handleCancel() {
         cancelledCommand.call()
     }
-
 
     private fun createBlog() {
         blog.title = title.value.toString()
@@ -126,11 +125,11 @@ class NewBlogViewModel : ViewModel() {
         })
     }
 
-    private fun displayNoAvatar(){
+    private fun displayNoAvatar() {
         avatarCommand.call()
     }
 
-    private fun displayNoConnection(){
+    private fun displayNoConnection() {
         displayInternetCommand.call()
     }
 

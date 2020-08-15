@@ -2,14 +2,16 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="model"
             type="com.example.blog.ui.findblog.FindBlogViewModel" />
 
         <variable
             name="blog"
-            type="com.example.blog.ui.blog.Blog" />
+            type="com.example.blog.model.Blog" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

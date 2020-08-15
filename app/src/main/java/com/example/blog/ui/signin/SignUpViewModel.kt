@@ -25,7 +25,7 @@ class SignUpViewModel : ViewModel() {
         isLoginDialogOpen.value = false
     }
 
-    fun handleLogoutClick(){
+    fun handleLogoutClick() {
         mAuth.signOut()
         email.value = "Anonymous"
     }

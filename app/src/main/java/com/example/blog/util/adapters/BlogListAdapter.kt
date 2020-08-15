@@ -1,16 +1,12 @@
-package com.example.blog.ui.blog
+package com.example.blog.util.adapters
 
-import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.blog.databinding.ChannelBinding
+import com.example.blog.ui.blog.BlogViewModel
 
-typealias AdapterBlogData = List<Blog>
-typealias AdapterBitmapData = List<Bitmap?>
-
-class BlogListAdapter   (
+class BlogListAdapter(
     private val model: BlogViewModel,
     private var data: Pair<AdapterBlogData, AdapterBitmapData> = Pair(emptyList(), emptyList())
 ) : RecyclerView.Adapter<BlogListAdapter.ViewHolder>() {
@@ -25,14 +21,14 @@ class BlogListAdapter   (
         val avatar = data.second[position]
 
         val title = blog.title
-        var time: String = ""
-        var lastMsg: String = ""
+        var time = ""
+        var lastMsg = ""
 
         if (blog.time.isNotEmpty()) {
             time = blog.time.last().toString()
         }
 
-        if (blog.messages.isNotEmpty()){
+        if (blog.messages.isNotEmpty()) {
             lastMsg = blog.messages.last().toString()
         }
 
@@ -49,31 +45,9 @@ class BlogListAdapter   (
     override fun getItemCount() = data.first.size
 
     fun setData(blogData: AdapterBlogData, bitmapData: AdapterBitmapData) {
-        val diffResult = DiffUtil.calculateDiff(
-            DiffCallback(
-                data.first,
-                blogData
-            )
-        )
         data = Pair(blogData, bitmapData)
-        diffResult.dispatchUpdatesTo(this)
+        notifyDataSetChanged()
     }
 
     class ViewHolder(val binding: ChannelBinding) : RecyclerView.ViewHolder(binding.root)
-
-    class DiffCallback(
-        private val oldBlogData: AdapterBlogData,
-        private val newBlogData: AdapterBlogData
-    ) : DiffUtil.Callback() {
-
-        override fun getOldListSize() = oldBlogData.size
-
-        override fun getNewListSize() = newBlogData.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldBlogData[oldItemPosition] == newBlogData[newItemPosition]
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldBlogData[oldItemPosition] == newBlogData[newItemPosition]
-    }
 }

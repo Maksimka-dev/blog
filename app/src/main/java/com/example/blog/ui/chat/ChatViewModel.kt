@@ -2,23 +2,28 @@
 
 package com.example.blog.ui.chat
 
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.blog.ui.blog.Blog
+import com.example.blog.R
+import com.example.blog.model.Blog
 import com.example.blog.util.livedata.SingleLiveEvent
 import com.example.blog.util.livedata.mutableLiveData
 import com.example.blog.util.view.MAX_DOWNLOAD_SIZE_BYTES
 import com.example.blog.util.view.MAX_MESSAGE_LENGTH
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
-
+import java.util.Date
+import java.util.Locale
 
 class ChatViewModel : ViewModel() {
 
@@ -43,10 +48,6 @@ class ChatViewModel : ViewModel() {
     val displayAdminCommand =
         SingleLiveEvent<Void>()
 
-    fun setUp(){
-        items.value = Triple(messages as List<String>, images as List<Bitmap?>, times as List<String>)
-    }
-
     private val user = FirebaseAuth.getInstance().currentUser
 
     var messages: ArrayList<String> = arrayListOf()
@@ -63,6 +64,14 @@ class ChatViewModel : ViewModel() {
     var messagesSnap: DataSnapshot? = null
     var timeSnap: DataSnapshot? = null
 
+    init {
+        defaultBitmap = BitmapFactory.decodeResource(Resources.getSystem(), R.mipmap.tiny)
+    }
+
+    fun setUp() {
+        items.value =
+            Triple(messages as List<String>, images as List<Bitmap?>, times as List<String>)
+    }
 
     private fun getTime() {
         if (timeSnap == null) {
@@ -123,10 +132,10 @@ class ChatViewModel : ViewModel() {
         }
     }
 
-    private fun getImages(){
+    private fun getImages() {
         images.clear()
 
-        for (i in 0 until messages.size){
+        for (i in 0 until messages.size) {
             images.add(null)
         }
 
@@ -139,16 +148,15 @@ class ChatViewModel : ViewModel() {
             imageRef.getBytes(MAX_DOWNLOAD_SIZE_BYTES)
                 .addOnSuccessListener {
                     images[i] = BitmapFactory.decodeByteArray(it, 0, it.size)
-                    //images.add(BitmapFactory.decodeByteArray(it, 0, it.size))
+                    // images.add(BitmapFactory.decodeByteArray(it, 0, it.size))
                     if (!images.contains(null)) {
                         imageCommand.call()
                     }
                 }
         }
-
     }
 
-    fun onSendBtnClick(){
+    fun onSendBtnClick() {
         if (isNetworkConnected()) {
             if (user!!.uid == blog.ownerId) {
 
@@ -166,7 +174,6 @@ class ChatViewModel : ViewModel() {
 
                 uploadMessage()
                 uploadPicture()
-
             } else displayNotAdmin()
         } else displayNoConnection()
     }
@@ -196,11 +203,11 @@ class ChatViewModel : ViewModel() {
         bitmapImage = null
     }
 
-    private fun displayNotAdmin(){
+    private fun displayNotAdmin() {
         displayAdminCommand.call()
     }
 
-    private fun displayNoConnection(){
+    private fun displayNoConnection() {
         displayInternetCommand.call()
     }
 

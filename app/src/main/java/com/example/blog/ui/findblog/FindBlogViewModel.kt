@@ -5,15 +5,18 @@ import android.graphics.BitmapFactory
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.blog.ui.blog.Blog
+import com.example.blog.model.User
+import com.example.blog.model.Blog
 import com.example.blog.util.livedata.SingleLiveEvent
 import com.example.blog.util.livedata.mutableLiveData
-import com.example.blog.util.user.User
 import com.example.blog.util.view.MAX_DOWNLOAD_SIZE_BYTES
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
-import java.util.ArrayList
 
 class FindBlogViewModel : ViewModel() {
     val items: MutableLiveData<Pair<List<Blog>, List<Bitmap?>>> =
@@ -45,7 +48,7 @@ class FindBlogViewModel : ViewModel() {
     private val databaseRef: DatabaseReference = database.getReference("Blogs")
     private val storageReference = FirebaseStorage.getInstance().reference.child("Blogs")
 
-    fun generateItems(){
+    fun generateItems() {
         progressVisibility.value = View.VISIBLE
 
         if (firebaseUser != null) {
@@ -57,6 +60,7 @@ class FindBlogViewModel : ViewModel() {
                         dataSnap = dataSnapshot
                         getData()
                     }
+
                     override fun onCancelled(error: DatabaseError) {
                     }
                 })
@@ -72,7 +76,8 @@ class FindBlogViewModel : ViewModel() {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     userSnap = dataSnapshot
                     user = dataSnapshot.getValue(User::class.java)
-            }
+                }
+
                 override fun onCancelled(error: DatabaseError) {
                 }
             })
@@ -102,20 +107,20 @@ class FindBlogViewModel : ViewModel() {
         }
     }
 
-    fun handleSearchClick(){
+    fun handleSearchClick() {
         searchCommand.call()
     }
 
-    fun handleBlogClick(blog: Blog){
+    fun handleBlogClick(blog: Blog) {
         subscribeVisibility.value = View.VISIBLE
         this.blog = blog
     }
 
-    fun handleSubClick(){
+    fun handleSubClick() {
         subCommand.call()
     }
 
-    fun subscribe(){
+    fun subscribe() {
         progressVisibility.value = View.VISIBLE
         if (user?.subbs?.contains(blog.blogId) == false) user?.subbs?.add(blog.blogId)
         FirebaseDatabase.getInstance()

@@ -5,22 +5,25 @@ package com.example.blog.ui.login
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.blog.R
 import com.example.blog.databinding.FragmentLoginDialogBinding
+import com.example.blog.util.extensions.isInternetAvailable
+import com.example.blog.util.view.NO_INTERNET
+import com.example.blog.util.view.WRONG_CREDENTIALS
 import com.example.blog.util.viewmodel.viewModel
 
-
 class LogInDialogFragment : DialogFragment() {
-
     private val model by viewModel<LogInDialogViewModel>()
-
     private lateinit var listener: Listener
+
+    companion object {
+        const val GO = "Go"
+        const val CANCEL = "Cancel"
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -32,25 +35,25 @@ class LogInDialogFragment : DialogFragment() {
         val dialog = setupDialog()
 
         model.validationErrorCommand.observe(this) {
-            Toast.makeText(context, "Wrong credentials :(", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, WRONG_CREDENTIALS, Toast.LENGTH_SHORT).show()
         }
 
         model.loggedInCommand.observe(this) {
-            listener.onLogin(model.email.value!!)
+            model.email.value?.let {
+                listener.onLogin(it)
+            }
         }
 
         model.cancelledCommand.observe(this) {
             listener.onCancel()
         }
 
-        model.internetCommand.observe(this){
-            val cm = activity?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
-            model.isInternetAvailable =  activeNetwork?.isConnectedOrConnecting == true
+        model.internetCommand.observe(this) {
+            model.isInternetAvailable = isInternetAvailable(requireActivity())
         }
 
-        model.displayInternetCommand.observe(this){
-            Toast.makeText(activity, "No internet connection available", Toast.LENGTH_SHORT).show()
+        model.displayInternetCommand.observe(this) {
+            Toast.makeText(activity, NO_INTERNET, Toast.LENGTH_SHORT).show()
         }
 
         return dialog
@@ -63,10 +66,10 @@ class LogInDialogFragment : DialogFragment() {
         binding.lifecycleOwner = this
         binding.model = model
 
-        val dialog = AlertDialog.Builder(activity!!)
+        val dialog = AlertDialog.Builder(requireActivity())
             .setView(view)
-            .setPositiveButton("Go", null)
-            .setNegativeButton("Cancel", null)
+            .setPositiveButton(GO, null)
+            .setNegativeButton(CANCEL, null)
             .create()
 
         isCancelable = false

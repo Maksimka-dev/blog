@@ -38,4 +38,7 @@
 
     <string name="type">Type</string>
     <string name="subscribe">Subscribe</string>
+    <string name="username">Username</string>
+    <string name="remember_me">Remember me</string>
+    <string name="message_pic">Message picture</string>
 </resources>

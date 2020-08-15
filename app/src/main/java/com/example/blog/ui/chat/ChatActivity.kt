@@ -3,88 +3,88 @@
 package com.example.blog.ui.chat
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.blog.R
 import com.example.blog.databinding.ActivityChatBinding
+import com.example.blog.util.adapters.ChatListAdapter
+import com.example.blog.util.extensions.isInternetAvailable
+import com.example.blog.util.extensions.toast
 import com.example.blog.util.inflaters.contentView
+import com.example.blog.util.view.NO_INTERNET
 import com.example.blog.util.viewmodel.viewModel
 
-
-class ChatActivity : AppCompatActivity(){
-
+class ChatActivity : AppCompatActivity() {
     private val model by viewModel<ChatViewModel>()
     private val binding by contentView<ActivityChatBinding>(
         R.layout.activity_chat
     )
 
+    companion object {
+        const val TITLE = "title"
+        const val BLOG_ID = "blogId"
+        const val OWNER_ID = "ownerId"
+        const val NO_ADMIN = "You are not an admin of this blog"
+    }
+
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding.model = model
 
-        val intent = intent
-        model.params = Triple(intent.getStringExtra("title"), intent.getStringExtra("blogId"), intent.getStringExtra("ownerId"))
+        model.params = Triple(
+            intent.getStringExtra(TITLE),
+            intent.getStringExtra(BLOG_ID),
+            intent.getStringExtra(OWNER_ID)
+        )
 
         val adapter = ChatListAdapter(model)
+        binding.recyclerView.adapter = adapter
 
         model.getMessages()
 
-        model.imageCommand.observe(this){
+        model.imageCommand.observe(this) {
             model.setUp()
         }
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = adapter
         if (model.messages.size > 0) binding.recyclerView.scrollToPosition(model.messages.size - 1)
-
 
         model.items.observe(this, Observer {
             adapter.setData(it.first, it.second, it.third)
-            adapter.notifyDataSetChanged()
             binding.recyclerView.scrollToPosition(model.messages.size - 1)
         })
 
-        model.internetCommand.observe(this){
-            val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
-            model.isInternetAvailable =  activeNetwork?.isConnectedOrConnecting == true
+        model.internetCommand.observe(this) {
+            model.isInternetAvailable = isInternetAvailable(this)
         }
 
-        model.displayInternetCommand.observe(this){
-            Toast.makeText(this, "No internet connection available", Toast.LENGTH_SHORT).show()
+        model.displayInternetCommand.observe(this) {
+            toast(NO_INTERNET)
         }
 
-        model.displayAdminCommand.observe(this){
-            Toast.makeText(this, "You are not an admin of this blog", Toast.LENGTH_SHORT).show()
+        model.displayAdminCommand.observe(this) {
+            toast(NO_ADMIN)
         }
-
-        model.defaultBitmap = BitmapFactory.decodeResource(this.resources, R.mipmap.tiny)
 
         binding.clipBtn.setOnClickListener {
-            if(ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-            {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
                 requestPermissions(
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                    2000)
-            }
-            else {
+                    2000
+                )
+            } else {
                 startGallery()
             }
         }
@@ -105,7 +105,7 @@ class ChatActivity : AppCompatActivity(){
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
             if (requestCode == 1000) {
-                val returnUri: Uri? = data!!.data
+                val returnUri: Uri? = data?.data
                 val bitmapImage = MediaStore.Images.Media.getBitmap(this.contentResolver, returnUri)
 
                 model.bitmapImage = bitmapImage

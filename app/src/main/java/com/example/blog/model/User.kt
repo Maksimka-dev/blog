@@ -1,6 +1,6 @@
-package com.example.blog.util.user
+package com.example.blog.model
 
-class User() {
+class User {
     var name: String = ""
     var email: String = ""
     val subbs: ArrayList<String> = arrayListOf()

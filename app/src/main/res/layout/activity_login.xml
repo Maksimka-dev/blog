@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="model"
             type="com.example.blog.ui.login.LogInViewModel" />
@@ -21,9 +23,9 @@
             android:background="@drawable/round_shape"
             android:elevation="1dp"
             android:fontFamily="@font/roboto_slab"
+            android:onClick="@{() -> model.handleLogoutClick()}"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:onClick="@{() -> model.handleLogoutClick()}"
             android:text="@string/Logout"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/login"

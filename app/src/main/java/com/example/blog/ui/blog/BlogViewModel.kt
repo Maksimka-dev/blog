@@ -7,15 +7,19 @@ import android.graphics.BitmapFactory
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.blog.model.Blog
 import com.example.blog.util.livedata.SingleLiveEvent
 import com.example.blog.util.livedata.mutableLiveData
-import com.example.blog.util.user.User
+import com.example.blog.model.User
 import com.example.blog.util.view.MAX_DOWNLOAD_SIZE_BYTES
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
-import java.util.*
 
 class BlogViewModel : ViewModel() {
 
@@ -55,7 +59,7 @@ class BlogViewModel : ViewModel() {
     private val databaseRef: DatabaseReference = database.getReference("Blogs")
     private val storageReference = FirebaseStorage.getInstance().reference.child("Blogs")
 
-    fun generateItems(){
+    fun generateItems() {
         if (isNetworkConnected()) {
             progressVisibility.value = View.VISIBLE
 
@@ -105,7 +109,7 @@ class BlogViewModel : ViewModel() {
             userRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     userSnap = dataSnapshot
-                    user = userSnap!!.getValue(User::class.java)
+                    user = userSnap!!.getValue(User::class.java) // usersnap?.let{}
                     onBlogSnap()
                 }
                 override fun onCancelled(error: DatabaseError) {
@@ -131,21 +135,21 @@ class BlogViewModel : ViewModel() {
         } else getBlogs()
     }
 
-    fun handleOpenCLick(currentBlog: Blog){
+    fun handleOpenCLick(currentBlog: Blog) {
         blog = currentBlog
         openCommand.call()
     }
 
-    fun handleSuccessfulCreate(){
+    fun handleSuccessfulCreate() {
         isCreateDialogOpen.value = false
         generateItems()
     }
 
-    fun handleCreateButtonClick(){
+    fun handleCreateButtonClick() {
         isCreateDialogOpen.value = true
     }
 
-    private fun displayNoConnection(){
+    private fun displayNoConnection() {
         displayInternetCommand.call()
     }
 

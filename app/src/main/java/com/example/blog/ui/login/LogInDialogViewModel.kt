@@ -47,7 +47,7 @@ class LogInDialogViewModel : ViewModel() {
         cancelledCommand.call()
     }
 
-    private fun logIn(){
+    private fun logIn() {
         mAuth.signInWithEmailAndPassword(email.value.toString(), password.value.toString())
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -60,7 +60,7 @@ class LogInDialogViewModel : ViewModel() {
             }
     }
 
-    private fun displayNoConnection(){
+    private fun displayNoConnection() {
         displayInternetCommand.call()
     }
 

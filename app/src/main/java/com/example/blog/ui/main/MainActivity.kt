@@ -13,7 +13,6 @@ import com.example.blog.ui.login.LogInActivity
 import com.example.blog.ui.signin.SignUpActivity
 import com.example.blog.util.inflaters.contentView
 
-
 class MainActivity : AppCompatActivity() {
 
     private val binding by contentView<ActivityMainBinding>(

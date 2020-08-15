@@ -5,10 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.blog.util.livedata.SingleLiveEvent
 import com.example.blog.util.livedata.mutableLiveData
-import com.example.blog.util.user.User
+import com.example.blog.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-
 
 class SignUpDialogViewModel : ViewModel() {
     val username = mutableLiveData("")
@@ -51,7 +50,7 @@ class SignUpDialogViewModel : ViewModel() {
         cancelledCommand.call()
     }
 
-    private fun signUp(){
+    private fun signUp() {
         mAuth.createUserWithEmailAndPassword(email.value.toString(), password.value.toString())
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -63,8 +62,8 @@ class SignUpDialogViewModel : ViewModel() {
                         .getReference("Users")
                         .child(FirebaseAuth.getInstance().currentUser!!.uid)
                         .setValue(user)
-                        .addOnCompleteListener{ databaseTask ->
-                            if (databaseTask.isSuccessful){
+                        .addOnCompleteListener { databaseTask ->
+                            if (databaseTask.isSuccessful) {
                                 isLoading.value = View.INVISIBLE
                                 loggedInCommand.call()
                             }
@@ -75,7 +74,7 @@ class SignUpDialogViewModel : ViewModel() {
             }
     }
 
-    private fun displayNoConnection(){
+    private fun displayNoConnection() {
         displayInternetCommand.call()
     }
 

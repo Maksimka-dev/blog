@@ -1,6 +1,6 @@
-package com.example.blog.ui.blog
+package com.example.blog.model
 
-class Blog () {
+class Blog {
     var title: String = ""
     var ownerId: String = ""
     var time: ArrayList<String> = arrayListOf()

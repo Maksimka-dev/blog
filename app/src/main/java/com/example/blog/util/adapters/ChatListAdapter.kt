@@ -1,11 +1,11 @@
-package com.example.blog.ui.chat
+package com.example.blog.util.adapters
 
 import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.blog.databinding.MessageBinding
+import com.example.blog.ui.chat.ChatViewModel
 
 typealias AdapterMessageData = List<String>
 typealias AdapterBitmapData = List<Bitmap?>
@@ -14,9 +14,9 @@ typealias AdapterTimeData = List<String>
 class ChatListAdapter(
     private val model: ChatViewModel,
     private var data: Triple<AdapterMessageData, AdapterBitmapData, AdapterTimeData> = Triple(
-        emptyList(), emptyList(), emptyList())
-) : RecyclerView.Adapter<ChatListAdapter.ViewHolder>()
-{
+        emptyList(), emptyList(), emptyList()
+    )
+) : RecyclerView.Adapter<ChatListAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = MessageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
@@ -38,33 +38,14 @@ class ChatListAdapter(
         holder.binding.messagePic.setImageBitmap(bitmap)
     }
 
-    fun setData(blogData: AdapterMessageData, bitmapData: AdapterBitmapData, timeData: AdapterTimeData) {
-        val diffResult = DiffUtil.calculateDiff(
-            DiffCallback(
-                data.first,
-                blogData
-            )
-        )
+    fun setData(
+        blogData: AdapterMessageData,
+        bitmapData: AdapterBitmapData,
+        timeData: AdapterTimeData
+    ) {
         data = Triple(blogData, bitmapData, timeData)
-        diffResult.dispatchUpdatesTo(this)
+        notifyDataSetChanged()
     }
 
     class ViewHolder(val binding: MessageBinding) : RecyclerView.ViewHolder(binding.root)
-
-    class DiffCallback(
-        private val oldMessageData: AdapterMessageData,
-        private val newMessageData: AdapterMessageData
-    ) : DiffUtil.Callback() {
-
-        override fun getOldListSize() = oldMessageData.size
-
-        override fun getNewListSize() = newMessageData.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldMessageData[oldItemPosition] == newMessageData[newItemPosition]
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldMessageData[oldItemPosition] == newMessageData[newItemPosition]
-    }
 }
-
