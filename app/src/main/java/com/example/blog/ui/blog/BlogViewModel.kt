@@ -22,33 +22,28 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 
 class BlogViewModel : ViewModel() {
-
     val items: MutableLiveData<Pair<List<Blog>, List<Bitmap?>>> =
         mutableLiveData()
-
     val progressVisibility: MutableLiveData<Int> =
         mutableLiveData(View.VISIBLE)
-
     val isCreateDialogOpen =
         mutableLiveData(false)
 
-    private val mAuth = FirebaseAuth.getInstance()
-
-    private var user: User? =
-        User()
-    private val firebaseUser = mAuth.currentUser
-
-    private var database: FirebaseDatabase = FirebaseDatabase.getInstance()
-
     var blog = Blog()
-
-    val internetCommand = SingleLiveEvent<Void>()
     var isInternetAvailable = false
 
     val displayInternetCommand =
         SingleLiveEvent<Void>()
+    val internetCommand =
+        SingleLiveEvent<Void>()
+    val openCommand =
+        SingleLiveEvent<Void>()
 
-    val openCommand = SingleLiveEvent<Void>()
+    private val mAuth = FirebaseAuth.getInstance()
+    private var user: User? =
+        User()
+    private val firebaseUser = mAuth.currentUser
+    private var database: FirebaseDatabase = FirebaseDatabase.getInstance()
 
     private var avatarList: ArrayList<Bitmap?> = arrayListOf()
     private var blogArrayList: ArrayList<Blog> = arrayListOf()
@@ -112,6 +107,7 @@ class BlogViewModel : ViewModel() {
                     user = userSnap!!.getValue(User::class.java) // usersnap?.let{}
                     onBlogSnap()
                 }
+
                 override fun onCancelled(error: DatabaseError) {
                 }
             })
