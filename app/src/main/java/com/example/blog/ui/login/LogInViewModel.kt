@@ -1,32 +1,72 @@
 package com.example.blog.ui.login
 
+import android.view.View
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.blog.util.livedata.SingleLiveEvent
 import com.example.blog.util.livedata.mutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 
 class LogInViewModel : ViewModel() {
-    val isLoginDialogOpen = mutableLiveData(false)
-
     private val mAuth = FirebaseAuth.getInstance()
 
-    val email =
-        mutableLiveData(FirebaseAuth.getInstance().currentUser?.email ?: "Anonymous")
+    var email = ""
+    var password = ""
+
+    val validationErrorCommand =
+        SingleLiveEvent<Void>()
+
+    val isLoading =
+        mutableLiveData(View.INVISIBLE)
+
+    val internetCommand =
+        SingleLiveEvent<Void>()
+
+    val displayInternetCommand =
+        SingleLiveEvent<Void>()
+
+    val loginSuccessful =
+        SingleLiveEvent<Void>()
+
+    var isInternetAvailable = false
+
+    init {
+        if (mAuth.currentUser != null) {
+            loginSuccessful.call()
+        }
+    }
 
     fun handleLoginButtonClick() {
-        isLoginDialogOpen.value = true
+        if (isNetworkConnected()) {
+            if (email.isBlank() || password.isBlank()) {
+                validationErrorCommand.call()
+                return
+            }
+
+            isLoading.value = View.VISIBLE
+            logIn()
+        } else displayNoConnection()
     }
 
-    fun handleSuccessfulLogin(email: String) {
-        this.email.value = email
-        isLoginDialogOpen.value = false
+    private fun logIn() {
+        mAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    loginSuccessful.call()
+                    isLoading.value = View.INVISIBLE
+                } else {
+                    validationErrorCommand.call()
+                }
+            }
     }
 
-    fun handleCancelledLogin() {
-        isLoginDialogOpen.value = false
+    private fun displayNoConnection() {
+        displayInternetCommand.call()
     }
 
-    fun handleLogoutClick() {
-        mAuth.signOut()
-        email.value = "Anonymous"
+    private fun isNetworkConnected(): Boolean {
+        internetCommand.call()
+        return isInternetAvailable
     }
 }

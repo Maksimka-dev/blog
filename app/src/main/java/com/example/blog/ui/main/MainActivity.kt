@@ -2,43 +2,41 @@
 
 package com.example.blog.ui.main
 
-import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.Navigation
+import androidx.navigation.navOptions
 import com.example.blog.R
-import com.example.blog.databinding.ActivityMainBinding
-import com.example.blog.ui.blog.BlogActivity
-import com.example.blog.ui.findblog.FindBlogActivity
-import com.example.blog.ui.login.LogInActivity
-import com.example.blog.ui.signin.SignUpActivity
-import com.example.blog.util.inflaters.contentView
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-
-    private val binding by contentView<ActivityMainBinding>(
-        R.layout.activity_main
-    )
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setButtons()
+        setContentView(R.layout.activity_main)
+
+        setSupportActionBar(toolbar)
     }
 
-    private fun setButtons() {
-        binding.homeButton.setOnClickListener {
-            startActivity(Intent(this, BlogActivity::class.java))
-        }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu to use in the action bar
+        val inflater = menuInflater
+        inflater.inflate(R.menu.toolbar_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
 
-        binding.findButton.setOnClickListener {
-            startActivity(Intent(this, FindBlogActivity::class.java))
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle presses on the action bar menu items
+        when (item.itemId) {
+            R.id.logout -> {
+                FirebaseAuth.getInstance().signOut()
+                Navigation.findNavController(findViewById(R.id.nav_host_fragment_container))
+                    .navigate(R.id.loginFragment)
+                return true
+            }
         }
-
-        binding.loginButton.setOnClickListener {
-            startActivity(Intent(this, LogInActivity::class.java))
-        }
-
-        binding.signupButton.setOnClickListener {
-            startActivity(Intent(this, SignUpActivity::class.java))
-        }
+        return super.onOptionsItemSelected(item)
     }
 }

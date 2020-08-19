@@ -1,62 +1,56 @@
-package com.example.blog.ui.signin
+package com.example.blog.ui.register
 
 import android.view.View
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.blog.model.User
 import com.example.blog.util.livedata.SingleLiveEvent
 import com.example.blog.util.livedata.mutableLiveData
-import com.example.blog.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class SignUpDialogViewModel : ViewModel() {
-    val username = mutableLiveData("")
-    val password = mutableLiveData("")
-    val email = mutableLiveData("")
+class RegisterViewModel : ViewModel() {
+    private val mAuth = FirebaseAuth.getInstance()
 
-    val remember = mutableLiveData(true)
-
-    val isLoading: MutableLiveData<Int> =
-        mutableLiveData(View.INVISIBLE)
+    var email = ""
+    var password = ""
+    var username = ""
 
     val validationErrorCommand =
         SingleLiveEvent<Void>()
 
-    val loggedInCommand = SingleLiveEvent<Void>()
-    val cancelledCommand = SingleLiveEvent<Void>()
+    val isLoading =
+        mutableLiveData(View.INVISIBLE)
 
-    val internetCommand = SingleLiveEvent<Void>()
-    var isInternetAvailable = false
+    val internetCommand =
+        SingleLiveEvent<Void>()
 
     val displayInternetCommand =
         SingleLiveEvent<Void>()
 
-    private val mAuth = FirebaseAuth.getInstance()
+    val registerSuccessful =
+        SingleLiveEvent<Void>()
 
-    fun handleLoginButtonClick() {
+    var isInternetAvailable = false
+
+    fun handleRegisterButtonClick() {
         if (isNetworkConnected()) {
-            if (username.value.isNullOrBlank() || password.value.isNullOrBlank() || email.value.isNullOrBlank()) {
+            if (email.isBlank() || password.isBlank() || username.isBlank()) {
                 validationErrorCommand.call()
                 return
             }
 
             isLoading.value = View.VISIBLE
-
-            signUp()
+            register()
         } else displayNoConnection()
     }
 
-    fun handleCancel() {
-        cancelledCommand.call()
-    }
-
-    private fun signUp() {
-        mAuth.createUserWithEmailAndPassword(email.value.toString(), password.value.toString())
+    private fun register() {
+        mAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val user = User()
-                    user.email = email.value.toString()
-                    user.name = username.value.toString()
+                    user.email = email
+                    user.name = username
 
                     FirebaseDatabase.getInstance()
                         .getReference("Users")
@@ -65,7 +59,7 @@ class SignUpDialogViewModel : ViewModel() {
                         .addOnCompleteListener { databaseTask ->
                             if (databaseTask.isSuccessful) {
                                 isLoading.value = View.INVISIBLE
-                                loggedInCommand.call()
+                                registerSuccessful.call()
                             }
                         }
                 } else {
