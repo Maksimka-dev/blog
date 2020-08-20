@@ -2,7 +2,6 @@ package com.example.blog.ui.findblog
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import com.example.blog.R
 import com.example.blog.databinding.ActivityFindblogBinding
 import com.example.blog.util.adapters.FindBlogListAdapter
@@ -26,9 +25,9 @@ class FindBlogActivity : AppCompatActivity() {
             model.generateItems()
         }
 
-        model.items.observe(this, Observer {
-            adapter.setData(it.first, it.second)
-        })
+        // model.items.observe(this, Observer {
+        //    adapter.setData(it.first, it.second)
+        // })
 
         model.subCommand.observe(this) {
             model.subscribe()

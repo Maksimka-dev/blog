@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorAccent"
-        android:onClick="@{() -> model.handleOpenCLick(blog)}">
+        android:onClick="@{() -> model.handleOpenBlogCLick(blog)}">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/channelAvatar"

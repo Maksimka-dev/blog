@@ -5,8 +5,8 @@ import android.graphics.BitmapFactory
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.blog.model.User
 import com.example.blog.model.Blog
+import com.example.blog.model.User
 import com.example.blog.util.livedata.SingleLiveEvent
 import com.example.blog.util.livedata.mutableLiveData
 import com.example.blog.util.view.MAX_DOWNLOAD_SIZE_BYTES

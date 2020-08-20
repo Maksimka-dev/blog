@@ -1,19 +1,18 @@
 package com.example.blog.util.adapters
 
-import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.blog.databinding.MessageBinding
 import com.example.blog.ui.chat.ChatViewModel
-
-typealias AdapterMessageData = List<String>
-typealias AdapterBitmapData = List<Bitmap?>
-typealias AdapterTimeData = List<String>
+import com.example.blog.util.view.AdapterAvatarData
+import com.example.blog.util.view.AdapterMessageData
+import com.example.blog.util.view.AdapterTimeData
 
 class ChatListAdapter(
     private val model: ChatViewModel,
-    private var data: Triple<AdapterMessageData, AdapterBitmapData, AdapterTimeData> = Triple(
+    private var data: Triple<AdapterMessageData, AdapterAvatarData, AdapterTimeData> = Triple(
         emptyList(), emptyList(), emptyList()
     )
 ) : RecyclerView.Adapter<ChatListAdapter.ViewHolder>() {
@@ -28,22 +27,26 @@ class ChatListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val message = data.first[position]
-        val bitmap = data.second[position]
+        val picUrl = data.second[position]
         val time = data.third[position]
 
         holder.binding.model = model
+        with(holder.binding) {
+            messageText.text = message
+            timeTV.text = time
 
-        holder.binding.messageText.text = message
-        holder.binding.timeTV.text = time
-        holder.binding.messagePic.setImageBitmap(bitmap)
+            Glide.with(messagePic)
+                .load(picUrl)
+                .into(messagePic)
+        }
     }
 
     fun setData(
         blogData: AdapterMessageData,
-        bitmapData: AdapterBitmapData,
+        avatarData: AdapterAvatarData,
         timeData: AdapterTimeData
     ) {
-        data = Triple(blogData, bitmapData, timeData)
+        data = Triple(blogData, avatarData, timeData)
         notifyDataSetChanged()
     }
 

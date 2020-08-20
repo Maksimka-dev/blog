@@ -48,9 +48,7 @@ class RegisterViewModel : ViewModel() {
         mAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val user = User()
-                    user.email = email
-                    user.name = username
+                    val user = User(email = email, name = username)
 
                     FirebaseDatabase.getInstance()
                         .getReference("Users")
