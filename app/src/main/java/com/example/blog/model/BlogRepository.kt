@@ -39,19 +39,22 @@ class BlogRepository {
         })
     }
 
-    fun getBlogsAvatars(user: User) {
-        val list: MutableList<String> = mutableListOf()
-        for ((index, blog) in blogsList.value?.withIndex()!!) {
-            if (user.subbs.contains(blog.blogId)) {
-                FirebaseStorage.getInstance().reference.child(BLOGS).child(blog.title)
-                    .child(AVATAR)
-                    .downloadUrl.addOnSuccessListener {
-                        list.add(it.toString())
+    fun getBlogsAvatars(user: User, i: Int = 0, list: MutableList<String> = mutableListOf()) {
+        if (list.size == user.subbs.size) {
+            blogsAvatarsList.value = list
+            return
+        } else {
+            val blog = blogsList.value?.get(i)
+            blog?.let {
+                if (user.subbs.contains(blog.blogId)) {
+                    FirebaseStorage.getInstance().reference.child(BLOGS).child(blog.title)
+                        .child(AVATAR)
+                        .downloadUrl.addOnSuccessListener {
+                            list.add(it.toString())
 
-                        if (index == blogsList.value!!.size - 1) {
-                            blogsAvatarsList.value = list
+                            getBlogsAvatars(user, i + 1, list)
                         }
-                    }
+                }
             }
         }
     }

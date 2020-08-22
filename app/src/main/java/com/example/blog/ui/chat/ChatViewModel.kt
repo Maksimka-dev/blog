@@ -2,205 +2,78 @@
 
 package com.example.blog.ui.chat
 
-import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.blog.R
 import com.example.blog.model.Blog
+import com.example.blog.model.Chat
+import com.example.blog.model.ChatRepository
+import com.example.blog.model.Message
 import com.example.blog.util.livedata.SingleLiveEvent
 import com.example.blog.util.livedata.mutableLiveData
-import com.example.blog.util.view.MAX_DOWNLOAD_SIZE_BYTES
-import com.example.blog.util.view.MAX_MESSAGE_LENGTH
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.storage.FirebaseStorage
-import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class ChatViewModel : ViewModel() {
+    var blog: Blog? = Blog()
 
-    val items: MutableLiveData<Triple<List<String>, List<Bitmap?>, List<String>>> =
-        mutableLiveData()
-
-    private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
-    private val storage: FirebaseStorage = FirebaseStorage.getInstance()
-
-    val textField = mutableLiveData("")
-
-    var blog: Blog =
-        Blog()
-
-    val imageCommand = SingleLiveEvent<Void>()
-
+    val openGalleryCommand = SingleLiveEvent<Void>()
     val internetCommand = SingleLiveEvent<Void>()
-    var isInternetAvailable = false
+    val displayInternetCommand = SingleLiveEvent<Void>()
+    val displayAdminCommand = SingleLiveEvent<Void>()
+    val hidePreviewCommand = SingleLiveEvent<Void>()
 
-    val displayInternetCommand =
-        SingleLiveEvent<Void>()
-    val displayAdminCommand =
-        SingleLiveEvent<Void>()
-
-    private val user = FirebaseAuth.getInstance().currentUser
-
-    var messages: ArrayList<String> = arrayListOf()
-    var times: ArrayList<String> = arrayListOf()
-    private var images: ArrayList<Bitmap?> = arrayListOf()
-
+    var isInternetAvailable = true
     var bitmapImage: Bitmap? = null
     var defaultBitmap: Bitmap? = null
 
-    var params = Triple("", "", "")
+    var chat: MutableLiveData<Chat> = mutableLiveData()
+    val textField = mutableLiveData("")
 
-    private val databaseReference: DatabaseReference = database.getReference("Blogs")
-
-    var messagesSnap: DataSnapshot? = null
-    var timeSnap: DataSnapshot? = null
+    private val user = FirebaseAuth.getInstance().currentUser
+    private val chatRepository: ChatRepository = ChatRepository()
 
     init {
-        defaultBitmap = BitmapFactory.decodeResource(Resources.getSystem(), R.mipmap.tiny)
+        chat = chatRepository.chat
     }
 
-    fun setUp() {
-        items.value =
-            Triple(messages as List<String>, images as List<Bitmap?>, times as List<String>)
-    }
-
-    private fun getTime() {
-        if (timeSnap == null) {
-            databaseReference.child("${blog.title}/time")
-                .addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        timeSnap = dataSnapshot
-                        times.clear()
-
-                        for (chatSnapshot: DataSnapshot in timeSnap!!.children) {
-                            val time: String? = chatSnapshot.getValue(String()::class.java)
-                            times.add(time!!)
-                        }
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-                })
-        } else {
-            times.clear()
-            for (chatSnapshot: DataSnapshot in timeSnap!!.children) {
-                val time: String? = chatSnapshot.getValue(String()::class.java)
-                times.add(time!!)
+    fun loadChat() {
+        if (isNetworkConnected()) {
+            if (blog != null) {
+                chatRepository.blog = blog!!
+                chatRepository.getMessages()
             }
-        }
-    }
-
-    fun getMessages() {
-        blog.title = params.first
-        blog.blogId = params.second
-        blog.ownerId = params.third
-
-        if (messagesSnap == null) {
-            databaseReference.child("${blog.title}/messages")
-                .addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        messagesSnap = dataSnapshot
-                        messages.clear()
-                        for (chatSnapshot: DataSnapshot in messagesSnap!!.children) {
-                            val message: String? = chatSnapshot.getValue(String()::class.java)
-                            messages.add(message!!)
-                        }
-                        getTime()
-                        getImages()
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-                })
-        } else {
-            messages.clear()
-            for (chatSnapshot: DataSnapshot in messagesSnap!!.children) {
-                val message: String? = chatSnapshot.getValue(String()::class.java)
-                messages.add(message!!)
-            }
-            getTime()
-            getImages()
-        }
-    }
-
-    private fun getImages() {
-        images.clear()
-
-        for (i in 0 until messages.size) {
-            images.add(null)
-        }
-
-        for (i in 0 until messages.size) {
-            val imageRef = storage.reference
-                .child("Blogs")
-                .child(blog.title)
-                .child("$i.png")
-
-            imageRef.getBytes(MAX_DOWNLOAD_SIZE_BYTES)
-                .addOnSuccessListener {
-                    images[i] = BitmapFactory.decodeByteArray(it, 0, it.size)
-                    // images.add(BitmapFactory.decodeByteArray(it, 0, it.size))
-                    if (!images.contains(null)) {
-                        imageCommand.call()
-                    }
-                }
-        }
+        } else displayNoConnection()
     }
 
     fun onSendBtnClick() {
         if (isNetworkConnected()) {
-            if (user!!.uid == blog.ownerId) {
+            if (blog != null && user!!.uid == blog!!.ownerId) {
 
                 val date = Date()
                 val dateFormat = SimpleDateFormat("MM.dd hh:mm", Locale.getDefault())
-                if (bitmapImage == null) {
+
+                if (bitmapImage == null && defaultBitmap != null) {
                     bitmapImage = defaultBitmap
                 }
 
-                images.add(bitmapImage!!)
-                times.add(dateFormat.format(date))
-                messages.add(textField.value.toString())
+                val message = Message(
+                    text = textField.value.toString(),
+                    time = dateFormat.format(date),
+                    picUrl = "",
+                    pic = bitmapImage
+                )
+                chatRepository.sendMessage(message, blog!!)
 
-                imageCommand.call()
-
-                uploadMessage()
-                uploadPicture()
+                hidePreviewCommand.call()
             } else displayNotAdmin()
         } else displayNoConnection()
     }
 
-    private fun uploadMessage() {
-        if (textField.value!!.length in 0..MAX_MESSAGE_LENGTH) {
-            databaseReference.child("${blog.title}/messages")
-                .setValue(messages)
-
-            databaseReference.child("${blog.title}/time")
-                .setValue(times)
-            textField.value = ""
-        }
-    }
-
-    private fun uploadPicture() {
-        val baos = ByteArrayOutputStream()
-        bitmapImage!!.compress(Bitmap.CompressFormat.PNG, 20, baos)
-        val data = baos.toByteArray()
-
-        FirebaseStorage
-            .getInstance()
-            .getReference("Blogs")
-            .child("${blog.title}/${messages.size - 1}.png")
-            .putBytes(data)
-
-        bitmapImage = null
+    fun onClipClick() {
+        openGalleryCommand.call()
     }
 
     private fun displayNotAdmin() {

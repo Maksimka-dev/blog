@@ -1,9 +1,14 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.blog.util.adapters
 
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import com.example.blog.databinding.MessageBinding
 import com.example.blog.ui.chat.ChatViewModel
 import com.example.blog.util.view.AdapterAvatarData
@@ -36,18 +41,29 @@ class ChatListAdapter(
             timeTV.text = time
 
             Glide.with(messagePic)
+                .asBitmap()
                 .load(picUrl)
-                .into(messagePic)
+                .into(object : SimpleTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?
+                    ) {
+                        messagePic.setImageBitmap(resource)
+                    }
+                })
         }
     }
 
-    fun setData(
+    fun addData(
         blogData: AdapterMessageData,
         avatarData: AdapterAvatarData,
         timeData: AdapterTimeData
     ) {
+        val position = data.first.size
+        val count = blogData.size - data.first.size
+
         data = Triple(blogData, avatarData, timeData)
-        notifyDataSetChanged()
+        notifyItemRangeInserted(position, count)
     }
 
     class ViewHolder(val binding: MessageBinding) : RecyclerView.ViewHolder(binding.root)

@@ -32,8 +32,8 @@
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
             android:background="@drawable/attach"
-            android:onClick="@{() -> model.onClipClick()}"
             android:elevation="1dp"
+            android:onClick="@{() -> model.onClipClick()}"
             app:layout_constraintBottom_toBottomOf="@+id/message"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/message" />
@@ -68,6 +68,17 @@
             app:layout_constraintBottom_toBottomOf="@+id/message"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/message" />
+
+        <ImageView
+            android:id="@+id/preview"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="4dp"
+            android:contentDescription="@string/preview"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/clipBtn"
+            app:layout_constraintStart_toStartOf="@+id/clipBtn"
+            tools:srcCompat="@tools:sample/avatars" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
