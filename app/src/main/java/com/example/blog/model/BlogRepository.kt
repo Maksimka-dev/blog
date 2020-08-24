@@ -1,17 +1,24 @@
 package com.example.blog.model
 
+import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import com.example.blog.util.livedata.mutableLiveData
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
+import java.io.ByteArrayOutputStream
 
 class BlogRepository {
     val blogsList: MutableLiveData<MutableList<Blog>> =
         mutableLiveData(mutableListOf())
     val blogsAvatarsList: MutableLiveData<MutableList<String>> =
+        mutableLiveData()
+    val subscription: MutableLiveData<Boolean> =
+        mutableLiveData()
+    val createdBlog: MutableLiveData<Blog> =
         mutableLiveData()
 
     companion object {
@@ -19,13 +26,18 @@ class BlogRepository {
         private const val AVATAR = "avatar.png"
     }
 
-    fun getBlogs(user: User) {
+    fun getBlogs(user: User, searchKeyword: String = "") {
         val databaseReference = FirebaseDatabase.getInstance().getReference(BLOGS)
         databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val list: MutableList<Blog> = mutableListOf()
                 for (blogSnapshot in snapshot.children) {
                     blogSnapshot.getValue(Blog::class.java)?.let {
+                        if (it.title == searchKeyword) {
+                            list.add(it)
+                            return
+                        }
+
                         if (user.subbs.contains(it.blogId)) {
                             list.add(it)
                         }
@@ -39,23 +51,74 @@ class BlogRepository {
         })
     }
 
-    fun getBlogsAvatars(user: User, i: Int = 0, list: MutableList<String> = mutableListOf()) {
+    fun getBlogsAvatars(
+        user: User,
+        searchKeyword: String = "",
+        i: Int = 0,
+        list: MutableList<String> = mutableListOf()
+    ) {
         if (list.size == user.subbs.size) {
             blogsAvatarsList.value = list
             return
         } else {
             val blog = blogsList.value?.get(i)
             blog?.let {
+                if (blog.title == searchKeyword) {
+                    FirebaseStorage.getInstance().reference.child(BLOGS).child(blog.title)
+                        .child(AVATAR)
+                        .downloadUrl.addOnSuccessListener {
+                            list.add(it.toString())
+                        }
+                    return
+                }
+
                 if (user.subbs.contains(blog.blogId)) {
                     FirebaseStorage.getInstance().reference.child(BLOGS).child(blog.title)
                         .child(AVATAR)
                         .downloadUrl.addOnSuccessListener {
                             list.add(it.toString())
 
-                            getBlogsAvatars(user, i + 1, list)
+                            getBlogsAvatars(user, i = i + 1, list = list)
                         }
                 }
             }
+        }
+    }
+
+    fun createBlog(blog: Blog, bitmap: Bitmap) {
+        FirebaseDatabase.getInstance()
+            .getReference("Blogs")
+            .child(blog.title)
+            .setValue(blog)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+
+                    val baos = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 20, baos)
+                    val data = baos.toByteArray()
+
+                    FirebaseStorage.getInstance()
+                        .reference
+                        .child("Blogs")
+                        .child(blog.title)
+                        .child("avatar.png")
+                        .putBytes(data)
+                        .addOnSuccessListener {
+                            createdBlog.value = blog
+                        }
+                }
+            }
+    }
+
+    fun subscribe(user: User, blog: Blog) {
+        if (!user.subbs.contains(blog.blogId)) {
+            user.subbs.add(blog.blogId)
+            FirebaseDatabase.getInstance()
+                .getReference("Users/${FirebaseAuth.getInstance().currentUser!!.uid}/subbs")
+                .setValue(user.subbs)
+                .addOnCompleteListener {
+                    subscription.value = true
+                }
         }
     }
 }

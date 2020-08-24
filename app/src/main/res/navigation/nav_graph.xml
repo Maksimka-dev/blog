@@ -97,6 +97,12 @@
         android:id="@+id/findBlogFragment"
         android:name="com.example.blog.ui.findblog.FindBlogFragment"
         android:label="FindBlogFragment"
-        tools:layout="@layout/fragment_find_blog" />
+        tools:layout="@layout/fragment_find_blog" >
+        <action
+            android:id="@+id/action_findBlogFragment_to_blogFragment"
+            app:destination="@id/blogFragment"
+            app:popUpTo="@id/findBlogFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
 
 </navigation>

@@ -13,7 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorWhite">
+        android:background="@color/colorAccent">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/blogPic"
@@ -82,10 +82,22 @@
         <ProgressBar
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:visibility="@{model.visibility}"
+            android:visibility="@{model.isLoading}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+        <Button
+            android:id="@+id/create"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/round_shape"
+            android:onClick="@{() -> model.handleCreateButtonClick()}"
+            android:text="@string/create"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

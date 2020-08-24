@@ -2,6 +2,8 @@ package com.example.blog.ui.blog
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -78,5 +80,9 @@ class BlogFragment : Fragment() {
         model.displayInternetCommand.observe(this) {
             Toast.makeText(context, NO_INTERNET, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
     }
 }

@@ -29,7 +29,7 @@ class BlogViewModel : ViewModel() {
         SingleLiveEvent<Void>()
 
     var user: MutableLiveData<User> = mutableLiveData()
-    var blogs: MutableLiveData<MutableList<Blog>> = mutableLiveData(mutableListOf())
+    var blogs: MutableLiveData<MutableList<Blog>> = mutableLiveData()
     var blogsAvatars: MutableLiveData<MutableList<String>> = mutableLiveData()
 
     private var blogRepository: BlogRepository = BlogRepository()
