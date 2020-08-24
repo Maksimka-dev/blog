@@ -8,75 +8,80 @@
         <variable
             name="model"
             type="com.example.blog.ui.findblog.FindBlogViewModel" />
-
-        <variable
-            name="blog"
-            type="com.example.blog.model.Blog" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
-        android:onClick="@{() -> model.handleBlogClick(blog)}">
+        android:layout_height="match_parent"
+        android:background="@color/colorAccent">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/channelAvatar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            app:civ_border_color="@color/colorWhite"
-            app:civ_border_width="2dp"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@mipmap/tiny" />
+            tools:listitem="@layout/channel_findblog" />
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:fontFamily="@font/roboto_slab_bold"
-            android:textColor="@color/colorWhite"
-            android:textSize="18sp"
-            app:layout_constraintStart_toEndOf="@+id/channelAvatar"
-            app:layout_constraintTop_toTopOf="@+id/channelAvatar"
-            tools:text="Title" />
+        <ProgressBar
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/progress"
+            android:visibility="@{model.isLoading}"
+            app:layout_constraintBottom_toBottomOf="@+id/recyclerView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/recyclerView" />
 
-        <TextView
-            android:id="@+id/channelLastMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/roboto_slab"
-            android:textColor="@color/colorPrimaryTransparent"
-            app:layout_constraintBottom_toBottomOf="@+id/channelAvatar"
-            app:layout_constraintStart_toEndOf="@+id/channelAvatar"
-            app:layout_constraintTop_toBottomOf="@+id/title"
-            tools:text="Ну теперь ты точно знаешь чего я хочу" />
-
-        <TextView
-            android:id="@+id/time"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:fontFamily="@font/roboto_slab"
-            android:textColor="@color/colorPrimaryTransparent"
-            app:layout_constraintBottom_toBottomOf="@+id/channelLastMessage"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="10:55" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorPrimaryTransparent"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="@{() -> model.handleSearchClick()}"
+            app:backgroundTint="@color/colorWhite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:srcCompat="@drawable/search" />
 
+        <EditText
+            android:id="@+id/search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:hint="@string/Search"
+            android:inputType="textPersonName"
+            android:text="@={model.search}"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorWhite"
+            app:layout_constraintBottom_toBottomOf="@+id/fab"
+            app:layout_constraintEnd_toStartOf="@+id/fab"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/fab" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@android:color/transparent"
+            android:onClick="@{() -> model.handleSubClick()}"
+            android:text="@string/subscribe"
+            android:textColor="@color/colorWhite"
+            android:visibility="@{model.subscribeVisibility}"
+            app:layout_constraintBottom_toTopOf="@+id/search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
