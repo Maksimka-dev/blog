@@ -1,114 +1,72 @@
 package com.example.blog.ui.findblog
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.blog.model.Blog
+import com.example.blog.model.BlogRepository
 import com.example.blog.model.User
+import com.example.blog.model.UserRepository
 import com.example.blog.util.livedata.SingleLiveEvent
 import com.example.blog.util.livedata.mutableLiveData
-import com.example.blog.util.view.MAX_DOWNLOAD_SIZE_BYTES
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.storage.FirebaseStorage
 
 class FindBlogViewModel : ViewModel() {
-    val items: MutableLiveData<Pair<List<Blog>, List<Bitmap?>>> =
-        mutableLiveData()
-
-    val progressVisibility: MutableLiveData<Int> =
-        mutableLiveData(View.INVISIBLE)
-    val subscribeVisibility: MutableLiveData<Int> =
-        mutableLiveData(View.INVISIBLE)
-
-    private var database: FirebaseDatabase = FirebaseDatabase.getInstance()
-
-    var blog = Blog()
-    private val mAuth = FirebaseAuth.getInstance()
-    private val firebaseUser = mAuth.currentUser
-    private var user: User? = null
-
+    val isLoading: MutableLiveData<Int> = mutableLiveData(View.INVISIBLE)
+    val subscribeVisibility: MutableLiveData<Int> = mutableLiveData(View.INVISIBLE)
     val search = mutableLiveData("")
 
-    private var avatarList: ArrayList<Bitmap?> = arrayListOf()
-    private var blogArrayList: ArrayList<Blog> = arrayListOf()
+    var blog = Blog()
+    var isInternetAvailable = true // check!
+    var isUserReady = false
 
+    val displayInternetCommand = SingleLiveEvent<Void>()
+    val internetCommand = SingleLiveEvent<Void>()
     val searchCommand = SingleLiveEvent<Void>()
-    val subCommand = SingleLiveEvent<Void>()
 
-    private var dataSnap: DataSnapshot? = null
-    private var userSnap: DataSnapshot? = null
+    var user: MutableLiveData<User> = mutableLiveData()
+    var blogs: MutableLiveData<MutableList<Blog>> = mutableLiveData()
+    var blogsAvatars: MutableLiveData<MutableList<String>> = mutableLiveData()
+    var subscription: MutableLiveData<Boolean> = mutableLiveData()
 
-    private val databaseRef: DatabaseReference = database.getReference("Blogs")
-    private val storageReference = FirebaseStorage.getInstance().reference.child("Blogs")
+    private var blogRepository: BlogRepository = BlogRepository()
+    private var userRepository: UserRepository = UserRepository()
 
-    fun generateItems() {
-        progressVisibility.value = View.VISIBLE
+    val blogsData = SingleLiveEvent<Pair<List<Blog>, List<String>>>()
 
-        if (firebaseUser != null) {
-            getUser()
-
-            if (dataSnap == null) {
-                databaseRef.addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        dataSnap = dataSnapshot
-                        getData()
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-                })
-            } else getData()
-        }
+    init {
+        user = userRepository.user
+        blogs = blogRepository.blogsList
+        blogsAvatars = blogRepository.blogsAvatarsList
+        subscription = blogRepository.subscription
     }
 
-    private fun getUser() {
-        if (userSnap == null) {
-            val userRef = FirebaseDatabase.getInstance()
-                .getReference("Users/${firebaseUser!!.uid}")
-            userRef.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    userSnap = dataSnapshot
-                    user = dataSnapshot.getValue(User::class.java)
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
-        } else user = userSnap!!.getValue(User::class.java)
+    fun loadUser() {
+        if (isNetworkConnected()) {
+            isLoading.value = View.VISIBLE
+            userRepository.getUser()
+        } else displayNoConnection()
     }
 
-    private fun getData() {
-        blogArrayList.clear()
-        avatarList.clear()
+    fun loadBlogs() {
+        blogRepository.getBlogs(user.value!!)
+    }
 
-        for (blogSnapshot in dataSnap!!.children) {
-            val blog = blogSnapshot.getValue(Blog::class.java)
+    fun loadBlogsPicsUrls() {
+        blogRepository.getBlogsAvatars(user.value!!)
+    }
 
-            if (blog != null && blog.title == search.value.toString()) {
-                storageReference.child(blog.title)
-                    .child("avatar.png")
-                    .getBytes(MAX_DOWNLOAD_SIZE_BYTES)
-                    .addOnSuccessListener {
-                        val bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
-                        avatarList.add(bitmap)
-                        blogArrayList.add(blog)
+    fun prepareData() {
+        if (blogs.value != null && blogsAvatars.value != null) {
+            blogsData.value = blogs.value!! to blogsAvatars.value!!
 
-                        items.value = Pair(blogArrayList as List<Blog>, avatarList as List<Bitmap?>)
-                        progressVisibility.value = View.INVISIBLE
-                    }
-            }
+            isLoading.value = View.INVISIBLE
         }
     }
 
     fun handleSearchClick() {
-        searchCommand.call()
+        if (isUserReady) {
+            searchCommand.call()
+        }
     }
 
     fun handleBlogClick(blog: Blog) {
@@ -117,18 +75,16 @@ class FindBlogViewModel : ViewModel() {
     }
 
     fun handleSubClick() {
-        subCommand.call()
+        isLoading.value = View.VISIBLE
+        blogRepository.subscribe(user.value!!, blog)
     }
 
-    fun subscribe() {
-        progressVisibility.value = View.VISIBLE
-        if (user?.subbs?.contains(blog.blogId) == false) user?.subbs?.add(blog.blogId)
-        FirebaseDatabase.getInstance()
-            .getReference("Users/${FirebaseAuth.getInstance().currentUser!!.uid}/subbs")
-            .setValue(user!!.subbs)
-            .addOnCompleteListener {
-                progressVisibility.value = View.INVISIBLE
-                subscribeVisibility.value = View.INVISIBLE
-            }
+    private fun displayNoConnection() {
+        displayInternetCommand.call()
+    }
+
+    private fun isNetworkConnected(): Boolean {
+        internetCommand.call()
+        return isInternetAvailable
     }
 }
