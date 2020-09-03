@@ -76,7 +76,7 @@
         tools:layout="@layout/fragment_chat">
         <argument
             android:name="blog"
-            app:argType="com.example.blog.model.Blog" />
+            app:argType="com.example.blog.model.blog.Blog" />
     </fragment>
 
     <fragment

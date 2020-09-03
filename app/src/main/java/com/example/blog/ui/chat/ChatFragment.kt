@@ -1,6 +1,7 @@
 package com.example.blog.ui.chat
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -19,20 +20,27 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.example.blog.R
 import com.example.blog.databinding.FragmentChatBinding
+import com.example.blog.ui.main.MainActivity
 import com.example.blog.util.adapters.ChatListAdapter
-import com.example.blog.util.extensions.isInternetAvailable
 import com.example.blog.util.extensions.setInvisible
 import com.example.blog.util.extensions.setVisible
 import com.example.blog.util.inflaters.contentView
 import com.example.blog.util.view.NOT_ADMIN
-import com.example.blog.util.view.NO_INTERNET
-import com.example.blog.util.viewmodel.viewModel
+import javax.inject.Inject
 
 class ChatFragment : Fragment() {
     private val binding by contentView<FragmentChatBinding>(R.layout.fragment_chat)
-    private val model by viewModel<ChatViewModel>()
     private val args: ChatFragmentArgs by navArgs()
     private lateinit var adapter: ChatListAdapter
+
+    @Inject
+    lateinit var model: ChatViewModel
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        (activity as MainActivity).chatComponent.inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,7 +61,7 @@ class ChatFragment : Fragment() {
         adapter = ChatListAdapter(model)
         binding.recyclerView.adapter = adapter
 
-        model.chat.observe(viewLifecycleOwner, Observer {
+        model.chat.observe(viewLifecycleOwner, {
             adapter.addData(it.messages, it.picsUrls, it.times)
             binding.recyclerView.scrollToPosition(it.messages.size - 1)
         })
@@ -71,14 +79,6 @@ class ChatFragment : Fragment() {
             } else {
                 startGallery()
             }
-        }
-
-        model.internetCommand.observe(this) {
-            model.isInternetAvailable = isInternetAvailable(requireActivity())
-        }
-
-        model.displayInternetCommand.observe(this) {
-            Toast.makeText(context, NO_INTERNET, Toast.LENGTH_SHORT).show()
         }
 
         model.displayAdminCommand.observe(this) {
@@ -99,6 +99,7 @@ class ChatFragment : Fragment() {
         }
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == AppCompatActivity.RESULT_OK) {

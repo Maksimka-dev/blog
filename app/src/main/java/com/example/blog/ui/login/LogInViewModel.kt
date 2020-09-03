@@ -1,17 +1,23 @@
 package com.example.blog.ui.login
 
 import android.view.View
-import androidx.lifecycle.LiveData
+import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
+import com.example.blog.model.storage.SharedPreferencesStorage
 import com.example.blog.util.livedata.SingleLiveEvent
 import com.example.blog.util.livedata.mutableLiveData
+import com.example.blog.util.view.PASSWORD_SUFFIX
+import com.example.blog.util.view.REGISTERED_USER
 import com.google.firebase.auth.FirebaseAuth
+import javax.inject.Inject
 
-class LogInViewModel : ViewModel() {
-    private val mAuth = FirebaseAuth.getInstance()
+class LogInViewModel @Inject constructor(
+    val mAuth: FirebaseAuth,
+    val sharedPreferencesStorage: SharedPreferencesStorage
+) : ViewModel() {
 
-    var email = ""
     var password = ""
+    val emailTV = ObservableField(sharedPreferencesStorage.getString(REGISTERED_USER))
 
     val validationErrorCommand =
         SingleLiveEvent<Void>()
@@ -38,7 +44,7 @@ class LogInViewModel : ViewModel() {
 
     fun handleLoginButtonClick() {
         if (isNetworkConnected()) {
-            if (email.isBlank() || password.isBlank()) {
+            if (emailTV.get()!!.isBlank() || password.isBlank()) {
                 validationErrorCommand.call()
                 return
             }
@@ -49,10 +55,18 @@ class LogInViewModel : ViewModel() {
     }
 
     private fun logIn() {
-        mAuth.signInWithEmailAndPassword(email, password)
+        mAuth.signInWithEmailAndPassword(emailTV.get()!!, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
+                    sharedPreferencesStorage.setString(
+                        REGISTERED_USER,
+                        emailTV.get()!!
+                    )
+                    sharedPreferencesStorage.setString(
+                        "${emailTV.get()!!}$PASSWORD_SUFFIX",
+                        password
+                    )
+
                     loginSuccessful.call()
                     isLoading.value = View.INVISIBLE
                 } else {

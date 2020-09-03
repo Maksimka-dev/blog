@@ -1,4 +1,4 @@
-package com.example.blog.model
+package com.example.blog.model.chat
 
 class Chat {
     val times: MutableList<String> = mutableListOf()

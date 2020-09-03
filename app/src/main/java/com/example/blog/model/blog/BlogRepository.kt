@@ -1,7 +1,8 @@
-package com.example.blog.model
+package com.example.blog.model.blog
 
 import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
+import com.example.blog.model.user.User
 import com.example.blog.util.livedata.mutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -10,8 +11,9 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
+import javax.inject.Inject
 
-class BlogRepository {
+class BlogRepository @Inject constructor(val database: FirebaseDatabase, val storage: FirebaseStorage) {
     val blogsList: MutableLiveData<MutableList<Blog>> =
         mutableLiveData(mutableListOf())
     val blogsAvatarsList: MutableLiveData<MutableList<String>> =
@@ -27,8 +29,7 @@ class BlogRepository {
     }
 
     fun getBlogs(user: User, searchKeyword: String = "") {
-        val databaseReference = FirebaseDatabase.getInstance().getReference(BLOGS)
-        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+        database.getReference(BLOGS).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val list: MutableList<Blog> = mutableListOf()
                 for (blogSnapshot in snapshot.children) {
@@ -64,7 +65,7 @@ class BlogRepository {
             val blog = blogsList.value?.get(i)
             blog?.let {
                 if (blog.title == searchKeyword) {
-                    FirebaseStorage.getInstance().reference.child(BLOGS).child(blog.title)
+                    storage.reference.child(BLOGS).child(blog.title)
                         .child(AVATAR)
                         .downloadUrl.addOnSuccessListener {
                             list.add(it.toString())
@@ -73,7 +74,7 @@ class BlogRepository {
                 }
 
                 if (user.subbs.contains(blog.blogId)) {
-                    FirebaseStorage.getInstance().reference.child(BLOGS).child(blog.title)
+                    storage.reference.child(BLOGS).child(blog.title)
                         .child(AVATAR)
                         .downloadUrl.addOnSuccessListener {
                             list.add(it.toString())
@@ -86,7 +87,7 @@ class BlogRepository {
     }
 
     fun createBlog(blog: Blog, bitmap: Bitmap) {
-        FirebaseDatabase.getInstance()
+        database
             .getReference("Blogs")
             .child(blog.title)
             .setValue(blog)
@@ -97,7 +98,7 @@ class BlogRepository {
                     bitmap.compress(Bitmap.CompressFormat.PNG, 20, baos)
                     val data = baos.toByteArray()
 
-                    FirebaseStorage.getInstance()
+                    storage
                         .reference
                         .child("Blogs")
                         .child(blog.title)
@@ -113,7 +114,7 @@ class BlogRepository {
     fun subscribe(user: User, blog: Blog) {
         if (!user.subbs.contains(blog.blogId)) {
             user.subbs.add(blog.blogId)
-            FirebaseDatabase.getInstance()
+            database
                 .getReference("Users/${FirebaseAuth.getInstance().currentUser!!.uid}/subbs")
                 .setValue(user.subbs)
                 .addOnCompleteListener {

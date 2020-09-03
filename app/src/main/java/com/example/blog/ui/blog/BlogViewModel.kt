@@ -5,24 +5,19 @@ package com.example.blog.ui.blog
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.blog.model.Blog
-import com.example.blog.model.BlogRepository
-import com.example.blog.model.User
-import com.example.blog.model.UserRepository
+import com.example.blog.model.blog.Blog
+import com.example.blog.model.blog.BlogRepository
+import com.example.blog.model.user.User
 import com.example.blog.util.livedata.SingleLiveEvent
 import com.example.blog.util.livedata.mutableLiveData
+import javax.inject.Inject
 
-class BlogViewModel : ViewModel() {
+class BlogViewModel @Inject constructor(val blogRepository: BlogRepository) : ViewModel() {
     val isLoading: MutableLiveData<Int> =
         mutableLiveData(View.VISIBLE)
 
     var blog = Blog()
-    var isInternetAvailable = true // check!
 
-    val displayInternetCommand =
-        SingleLiveEvent<Void>()
-    val internetCommand =
-        SingleLiveEvent<Void>()
     val openCommand =
         SingleLiveEvent<Void>()
     val createBlogCommand =
@@ -32,23 +27,12 @@ class BlogViewModel : ViewModel() {
     var blogs: MutableLiveData<MutableList<Blog>> = mutableLiveData()
     var blogsAvatars: MutableLiveData<MutableList<String>> = mutableLiveData()
 
-    private var blogRepository: BlogRepository = BlogRepository()
-    private var userRepository: UserRepository = UserRepository()
-
     val blogsData =
         SingleLiveEvent<Pair<List<Blog>, List<String>>>()
 
     init {
-        user = userRepository.user
         blogs = blogRepository.blogsList
         blogsAvatars = blogRepository.blogsAvatarsList
-    }
-
-    fun loadUser() {
-        if (isNetworkConnected()) {
-            isLoading.value = View.VISIBLE
-            userRepository.getUser()
-        } else displayNoConnection()
     }
 
     fun loadBlogs() {
@@ -74,14 +58,5 @@ class BlogViewModel : ViewModel() {
 
     fun handleCreateBlogButtonClick() {
         createBlogCommand.call()
-    }
-
-    private fun displayNoConnection() {
-        displayInternetCommand.call()
-    }
-
-    private fun isNetworkConnected(): Boolean {
-        internetCommand.call()
-        return isInternetAvailable
     }
 }

@@ -1,7 +1,8 @@
-package com.example.blog.model
+package com.example.blog.model.chat
 
 import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
+import com.example.blog.model.blog.Blog
 import com.example.blog.util.livedata.mutableLiveData
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -11,8 +12,12 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.ByteArrayOutputStream
+import javax.inject.Inject
 
-class ChatRepository {
+class ChatRepository @Inject constructor(
+    val database: FirebaseDatabase,
+    val storage: FirebaseStorage
+) {
     private val messagesList: MutableList<String> = mutableListOf()
     private val timesList: MutableList<String> = mutableListOf()
     private val picsUrlsList: MutableList<String> = mutableListOf()
@@ -21,9 +26,9 @@ class ChatRepository {
     var blog: Blog = Blog()
 
     private val databaseReference: DatabaseReference =
-        FirebaseDatabase.getInstance().getReference("Blogs")
+        database.getReference("Blogs")
     private val storageReference: StorageReference =
-        FirebaseStorage.getInstance().reference.child("Blogs")
+        storage.reference.child("Blogs")
 
     fun getMessages() {
         databaseReference.child("${blog.title}/messages")
@@ -101,8 +106,7 @@ class ChatRepository {
             it.compress(Bitmap.CompressFormat.PNG, 20, baos)
             val data = baos.toByteArray()
 
-            FirebaseStorage
-                .getInstance()
+            storage
                 .getReference("Blogs")
                 .child("${blog.title}/${messagesList.size - 1}.png")
                 .putBytes(data)

@@ -1,4 +1,4 @@
-package com.example.blog.model
+package com.example.blog.model.chat
 
 import android.graphics.Bitmap
 

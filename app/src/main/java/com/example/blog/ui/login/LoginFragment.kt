@@ -1,5 +1,6 @@
 package com.example.blog.ui.login
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,16 +11,25 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.example.blog.R
 import com.example.blog.databinding.FragmentLoginBinding
+import com.example.blog.ui.main.MainActivity
 import com.example.blog.util.extensions.isInternetAvailable
 import com.example.blog.util.inflaters.contentView
 import com.example.blog.util.view.NO_INTERNET
 import com.example.blog.util.view.WRONG_CREDENTIALS
-import com.example.blog.util.viewmodel.viewModel
+import javax.inject.Inject
 
 class LoginFragment : Fragment() {
     private val binding by contentView<FragmentLoginBinding>(R.layout.fragment_login)
-    private val model by viewModel<LogInViewModel>()
     private lateinit var navController: NavController
+
+    @Inject
+    lateinit var model: LogInViewModel
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        (activity as MainActivity).loginComponent.inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

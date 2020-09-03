@@ -4,6 +4,7 @@ package com.example.blog.ui.newblog
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -15,23 +16,35 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.example.blog.R
 import com.example.blog.databinding.FragmentNewBlogBinding
-import com.example.blog.util.extensions.isInternetAvailable
+import com.example.blog.model.user.User
+import com.example.blog.ui.main.MainActivity
 import com.example.blog.util.inflaters.contentView
-import com.example.blog.util.view.NO_INTERNET
-import com.example.blog.util.viewmodel.viewModel
+import javax.inject.Inject
 
 class NewBlogFragment : Fragment() {
     private val binding by contentView<FragmentNewBlogBinding>(R.layout.fragment_new_blog)
-    private val model by viewModel<NewBlogViewModel>()
     private lateinit var navController: NavController
+
+    @Inject
+    lateinit var model: NewBlogViewModel
+
+    @Inject
+    lateinit var user: MutableLiveData<User?>
 
     companion object {
         const val SELECT_ICON = "Please select blog icon"
         const val TITLE_TOO_SHORT = "Title is too short"
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        (activity as MainActivity).newBlogComponent.inject(this)
     }
 
     override fun onCreateView(
@@ -48,9 +61,8 @@ class NewBlogFragment : Fragment() {
 
         navController = Navigation.findNavController(view)
 
-        model.getUser()
-
-        model.user.observe(viewLifecycleOwner, {
+        user.observe(viewLifecycleOwner, {
+            model.user.value = it
             model.isUserReady = true
         })
 
@@ -68,14 +80,6 @@ class NewBlogFragment : Fragment() {
 
         model.avatarCommand.observe(this) {
             Toast.makeText(context, SELECT_ICON, Toast.LENGTH_SHORT).show()
-        }
-
-        model.internetCommand.observe(this) {
-            model.isInternetAvailable = isInternetAvailable(requireActivity())
-        }
-
-        model.displayInternetCommand.observe(this) {
-            Toast.makeText(activity, NO_INTERNET, Toast.LENGTH_SHORT).show()
         }
 
         binding.blogPic.setOnClickListener {

@@ -11,7 +11,7 @@
 
         <variable
             name="blog"
-            type="com.example.blog.model.Blog" />
+            type="com.example.blog.model.blog.Blog" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

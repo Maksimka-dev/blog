@@ -1,4 +1,4 @@
-package com.example.blog.model
+package com.example.blog.model.blog
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
