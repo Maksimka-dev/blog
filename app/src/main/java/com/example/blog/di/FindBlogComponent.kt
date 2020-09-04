@@ -1,6 +1,5 @@
-package com.example.blog.di.findblog
+package com.example.blog.di
 
-import com.example.blog.di.FragmentScope
 import com.example.blog.ui.findblog.FindBlogFragment
 import com.example.blog.ui.main.MainActivity
 import dagger.Subcomponent

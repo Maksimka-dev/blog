@@ -13,7 +13,7 @@ import javax.inject.Inject
 class FindBlogViewModel @Inject constructor(val blogRepository: BlogRepository) : ViewModel() {
     val isLoading: MutableLiveData<Int> = mutableLiveData(View.INVISIBLE)
     val subscribeVisibility: MutableLiveData<Int> = mutableLiveData(View.INVISIBLE)
-    val search = mutableLiveData("")
+    var search = ""
 
     var blog = Blog()
     var isUserReady = false
@@ -34,11 +34,13 @@ class FindBlogViewModel @Inject constructor(val blogRepository: BlogRepository) 
     }
 
     fun loadBlogs() {
-        blogRepository.getBlogs(user.value!!)
+        if (search.isNotEmpty()) {
+            blogRepository.getBlogs(user.value!!, searchKeyword = search)
+        }
     }
 
     fun loadBlogsPicsUrls() {
-        blogRepository.getBlogsAvatars(user.value!!)
+        blogRepository.getBlogsAvatars(user.value!!, searchKeyword = search)
     }
 
     fun prepareData() {

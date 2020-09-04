@@ -56,7 +56,6 @@ class FindBlogFragment : Fragment() {
             it?.let {
                 model.user.value = it
                 model.isUserReady = true
-                model.loadBlogs()
             }
         })
 
@@ -81,7 +80,7 @@ class FindBlogFragment : Fragment() {
         }
 
         model.subscription.observe(viewLifecycleOwner, {
-            if (it == true) {
+            if (it) {
                 navController.navigate(R.id.action_findBlogFragment_to_blogFragment)
             }
         })

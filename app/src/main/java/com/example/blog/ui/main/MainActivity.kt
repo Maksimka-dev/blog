@@ -12,12 +12,12 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.blog.BlogApplication
 import com.example.blog.R
-import com.example.blog.di.blog.BlogComponent
-import com.example.blog.di.chat.ChatComponent
-import com.example.blog.di.findblog.FindBlogComponent
-import com.example.blog.di.login.LoginComponent
-import com.example.blog.di.newblog.NewBlogComponent
-import com.example.blog.di.register.RegisterComponent
+import com.example.blog.di.BlogComponent
+import com.example.blog.di.ChatComponent
+import com.example.blog.di.FindBlogComponent
+import com.example.blog.di.LoginComponent
+import com.example.blog.di.NewBlogComponent
+import com.example.blog.di.RegisterComponent
 import com.google.firebase.auth.FirebaseAuth
 import javax.inject.Inject
 
@@ -80,12 +80,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val navController = Navigation.findNavController(findViewById(R.id.nav_host_fragment_container))
         when (item.itemId) {
             R.id.logout -> {
                 auth.signOut()
-                Navigation.findNavController(findViewById(R.id.nav_host_fragment_container))
-                    .navigate(R.id.loginFragment)
+                navController.navigate(R.id.loginFragment)
                 return true
+            }
+            R.id.search -> {
+                navController.navigate(R.id.findBlogFragment)
             }
         }
         return super.onOptionsItemSelected(item)

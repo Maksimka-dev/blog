@@ -36,6 +36,8 @@ class BlogRepository @Inject constructor(val database: FirebaseDatabase, val sto
                     blogSnapshot.getValue(Blog::class.java)?.let {
                         if (it.title == searchKeyword) {
                             list.add(it)
+
+                            blogsList.value = list
                             return
                         }
 
@@ -58,7 +60,7 @@ class BlogRepository @Inject constructor(val database: FirebaseDatabase, val sto
         i: Int = 0,
         list: MutableList<String> = mutableListOf()
     ) {
-        if (list.size == user.subbs.size) {
+        if (list.size == user.subbs.size && user.subbs.size > 0) {
             blogsAvatarsList.value = list
             return
         } else {
@@ -69,6 +71,7 @@ class BlogRepository @Inject constructor(val database: FirebaseDatabase, val sto
                         .child(AVATAR)
                         .downloadUrl.addOnSuccessListener {
                             list.add(it.toString())
+                            blogsAvatarsList.value = list
                         }
                     return
                 }
