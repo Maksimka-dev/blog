@@ -119,7 +119,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:1.4.0"
     testRuntimeOnly 'org.jetbrains.spek:spek-junit-platform-engine'
     // Include Spek 2 JUnit test engine
-    testRuntimeOnly 'org.spekframework.spek2:spek-runner-junit5:2.0.0-alpha.1'
+    // testRuntimeOnly 'org.spekframework.spek2:spek-runner-junit5:2.0.0-alpha.1'
 
     // Dagger
     def dagger_version = "2.27"
