@@ -52,4 +52,5 @@
     <string name="login_failed">"Login failed"</string>
     <string name="preview">preview</string>
     <string name="create">create</string>
+    <string name="change_theme">change theme</string>
 </resources>

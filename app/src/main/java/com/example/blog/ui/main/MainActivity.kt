@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
@@ -23,6 +25,7 @@ import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
+    private var isLightTheme = true
 
     lateinit var blogComponent: BlogComponent
     lateinit var loginComponent: LoginComponent
@@ -54,6 +57,15 @@ class MainActivity : AppCompatActivity() {
         chatComponent = (application as BlogApplication).appComponent.chatComponent().create()
         chatComponent.inject(this)
 
+
+        isLightTheme = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+            setTheme(R.style.DarkTheme)
+            false
+        } else {
+            setTheme(R.style.LightTheme)
+            true
+        }
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -69,7 +81,17 @@ class MainActivity : AppCompatActivity() {
                 R.id.registerFragment
             )
         )
-        setSupportActionBar(findViewById(R.id.toolbar))
+
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        if (isLightTheme) {
+            toolbar.setBackgroundColor(resources.getColor(R.color.colorPrimary_))
+            toolbar.setTitleTextColor(resources.getColor(R.color.textColor))
+        } else {
+            toolbar.setBackgroundColor(resources.getColor(R.color.colorPrimary))
+            toolbar.setTitleTextColor(resources.getColor(R.color.textColor))
+        }
+
         setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
@@ -88,7 +110,18 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
             R.id.search -> {
-                navController.navigate(R.id.findBlogFragment)
+                if (auth.currentUser != null) {
+                    navController.navigate(R.id.findBlogFragment)
+                }
+            }
+            R.id.moon -> {
+                if (isLightTheme) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    recreate()
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    recreate()
+                }
             }
         }
         return super.onOptionsItemSelected(item)

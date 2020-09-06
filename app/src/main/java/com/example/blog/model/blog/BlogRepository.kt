@@ -91,7 +91,7 @@ class BlogRepository @Inject constructor(val database: FirebaseDatabase, val sto
 
     fun createBlog(blog: Blog, bitmap: Bitmap) {
         database
-            .getReference("Blogs")
+            .getReference(BLOGS)
             .child(blog.title)
             .setValue(blog)
             .addOnCompleteListener { task ->

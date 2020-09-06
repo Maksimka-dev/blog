@@ -17,7 +17,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
         android:onClick="@{() -> model.handleBlogClick(blog)}">
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -40,7 +39,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:fontFamily="@font/roboto_slab_bold"
-            android:textColor="@color/colorWhite"
             android:textSize="18sp"
             app:layout_constraintStart_toEndOf="@+id/channelAvatar"
             app:layout_constraintTop_toTopOf="@+id/channelAvatar"
@@ -53,7 +51,6 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/roboto_slab"
-            android:textColor="@color/colorPrimaryTransparent"
             app:layout_constraintBottom_toBottomOf="@+id/channelAvatar"
             app:layout_constraintStart_toEndOf="@+id/channelAvatar"
             app:layout_constraintTop_toBottomOf="@+id/title"
@@ -65,7 +62,6 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/roboto_slab"
-            android:textColor="@color/colorPrimaryTransparent"
             app:layout_constraintBottom_toBottomOf="@+id/channelLastMessage"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="10:55" />

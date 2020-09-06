@@ -13,8 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorAccent">
+        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -46,10 +45,11 @@
             android:layout_marginBottom="16dp"
             style="@style/fabStyle"
             android:clickable="true"
+            android:backgroundTint="@color/colorPrimary_"
+            android:focusable="true"
             android:onClick="@{() -> model.handleCreateBlogButtonClick()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/plus"
-            android:focusable="true" />
+            app:srcCompat="@drawable/plus" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

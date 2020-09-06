@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#212d3b</color>
-    <color name="colorPrimaryDark">#1d2733</color>
     <color name="colorPrimaryTransparent">#3d5263</color>
-    <color name="colorAccent">#5ea3dc</color>
     <color name="colorAccentLight">#99d1ff</color>
     <color name="colorMenuPrimary">#233040</color>
     <color name="colorNavBar">#FFFFFF</color>
@@ -11,6 +8,22 @@
     <color name="colorStatusBar">#1a242e</color>
     <color name="colorBlack">#000000</color>
 
+    <!-- DarkTheme colors -->
+    <color name="colorPrimary">#212121</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#e15861</color>
+    <color name="colorBackground">#303030</color>
+    <color name="textColor">#ffffff</color>
+    <color name="textLightColor">#ffffff</color>
+
     <color name="colorPink">#e15861</color>
     <color name="colorPurple">#b72377</color>
+
+    <!-- LightTheme colors -->
+    <color name="colorPrimary_">#2196F3</color>
+    <color name="colorPrimaryDark_">#1976D2</color>
+    <color name="colorAccent_">#e15861</color>
+    <color name="colorBackground_">#fcfcfc</color>
+    <color name="textColor_">#303030</color>
+    <color name="textLightColor_">#ffffff</color>
 </resources>

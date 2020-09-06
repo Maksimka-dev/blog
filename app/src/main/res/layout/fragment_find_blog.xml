@@ -13,8 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorAccent">
+        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -47,7 +46,6 @@
             android:clickable="true"
             android:focusable="true"
             android:onClick="@{() -> model.handleSearchClick()}"
-            app:backgroundTint="@color/colorWhite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/search" />
@@ -63,8 +61,6 @@
             android:hint="@string/Search"
             android:inputType="textPersonName"
             android:text="@={model.search}"
-            android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorWhite"
             app:layout_constraintBottom_toBottomOf="@+id/fab"
             app:layout_constraintEnd_toStartOf="@+id/fab"
             app:layout_constraintStart_toStartOf="parent"
@@ -78,7 +74,6 @@
             android:background="@android:color/transparent"
             android:onClick="@{() -> model.handleSubClick()}"
             android:text="@string/subscribe"
-            android:textColor="@color/colorWhite"
             android:visibility="@{model.subscribeVisibility}"
             app:layout_constraintBottom_toTopOf="@+id/search"
             app:layout_constraintEnd_toEndOf="parent"
